@@ -1,13 +1,29 @@
-// Copyright 2016 William Yates
+// Copyright 2017 William Yates
 
 #pragma once
 
 #include "Chunk.h"
 
-/**
-*
-*/
-class WATCHTOWER_API ChunkGenerator
+struct FBlockFace
+{
+	bool bCulled;
+	uint8 Type;
+	uint8 Side;
+
+	FBlockFace()
+	{
+		bCulled = false;
+		Type = 0;
+		Side = 0;
+	}
+
+	FORCEINLINE bool Equals(const FBlockFace& Face) const
+	{
+		return Face.bCulled == bCulled && Face.Type == Type;
+	}
+};
+
+class WATCHTOWER_API FChunkGenerator
 {
 private:
 	bool xPositive;
@@ -16,27 +32,40 @@ private:
 	bool yNegative;
 	bool zPositive;
 	bool zNegative;
-	Chunk* chunk;
-	URuntimeMeshComponent* mesh;
+	FChunk* Chunk;
+	URuntimeMeshComponent* Mesh;
 
-	TArray<FVector> vertices;
-	TArray<FVector> normals;
-	TArray<FRuntimeMeshTangent> tangents;
-	TArray<FColor> colors;
-	TArray<FVector2D> textureCoordinates;
-	TArray<int32> triangles;
+	TArray<FVector> Vertices;
+	TArray<FVector> Normals;
+	TArray<FRuntimeMeshTangent> Tangents;
+	TArray<FColor> Colors;
+	TArray<FVector2D> TextureCoordinates;
+	TArray<int32> Triangles;
 
 private:
-	inline void UpdateActiveFaces(int x, int y, int z);
-	inline void AppendVertex(float x, float y, float z, FVector offset);
-	inline void AppendNormal(FVector normal);
-	inline void AppendColor(FColor color);
+	static const uint32 Scale = FBlock::SIZE;
+
+	inline void UpdateActiveFaces(uint32 x, uint32 y, uint32 z);
+	inline void AppendVertex(float x, float y, float z, FVector Offset);
+	inline void AppendNormal(FVector Normal);
+	inline void AppendColor(FColor Color);
 	inline void AppendTriangles();
-	inline void GenerateBlockData(FVector position, FColor color);
+	inline void GenerateBlockData(FVector Position, FColor Color);
+
+
+	FIntVector dims;
+
+	bool f(uint32 i, uint32 j, uint32 k) {
+		return Chunk->Blocks[i + dims[0] * (j + dims[1] * k)].Active;
+	};
+
+
+
+	FBlockFace GetBlockFace(const FIntVector& InCoordinate, uint8 Side) const;
 
 public:
 	void Generate();
 
-	ChunkGenerator(Chunk* targetChunk, URuntimeMeshComponent* targetMesh);
-	~ChunkGenerator();
+	FChunkGenerator(FChunk* TargetChunk, URuntimeMeshComponent* TargetMesh);
+	~FChunkGenerator();
 };

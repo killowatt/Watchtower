@@ -1,5 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2017 William Yates
 
 #pragma once
 
 #include "Engine.h"
+

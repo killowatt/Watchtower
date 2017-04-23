@@ -1,42 +1,31 @@
-// Copyright 2016 William Yates
+// Copyright 2017 William Yates
 
 #pragma once
 
-#include "Core.h"
+#include "GameFramework/Actor.h"
 #include "RuntimeMeshComponent.h"
-
+#include "VoxelMapData.h"
 #include "Chunk.generated.h"
 
-USTRUCT()
-struct FBlock
+UCLASS()
+class WATCHTOWER_API AChunk : public AActor
 {
 	GENERATED_BODY()
 
-	bool Active;
-	FColor Color;
-
-	static const uint32 SIZE = 100;
-
-	FBlock(bool active = false, FColor color = FColor());
-};
-
-class WATCHTOWER_API Chunk
-{
-public:
-	static const int WIDTH = 16;
-	static const int HEIGHT = 16;
-	static const int DEPTH = 16;
-
-private:
-	FBlock blocks[WIDTH * HEIGHT * DEPTH];
+	FChunk* ChunkData;
 	URuntimeMeshComponent* RuntimeMesh;
 
-public:
-	FBlock& GetBlock(int x, int y, int z);
-	void SetBlock(int x, int y, int z, FBlock block);
+	UMaterial* material;
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+	virtual void OnConstruction(const FTransform& Transform) override;
+
+public:	
 
 	void Generate();
-
-	Chunk();
-	~Chunk();
+	
+	// Sets default values for this actor's properties
+	AChunk();
 };

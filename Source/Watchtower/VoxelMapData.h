@@ -1,11 +1,36 @@
-// Copyright 2016 William Yates
+// Copyright 2017 William Yates
 
 #pragma once
 
-#include "Chunk.h"
-
-#include "Object.h"
+#include "Core.h"
 #include "VoxelMapData.generated.h"
+
+USTRUCT()
+struct FBlock
+{
+	GENERATED_BODY()
+
+	bool Active;
+	FColor Color;
+
+	static const uint32 SIZE = 100;
+	static FBlock Default;
+
+	FBlock();
+};
+struct FChunk
+{
+	static const int WIDTH = 16;
+	static const int DEPTH = 16;
+	static const int HEIGHT = 128;
+	
+	FBlock& GetBlock(int32 X, int32 Y, int32 Z);
+	FBlock& GetBlock(const FIntVector& Coordinate);
+
+	FBlock Blocks[WIDTH * HEIGHT * DEPTH];
+
+	FChunk();
+};
 
 UCLASS()
 class WATCHTOWER_API UVoxelMapData : public UObject
@@ -13,17 +38,16 @@ class WATCHTOWER_API UVoxelMapData : public UObject
 	GENERATED_BODY()
 
 private:
-	TArray<Chunk> chunks;
+	TArray<FChunk> Chunks;
+	FIntVector Size;
 
-	uint32 width;
-	uint32 height;
-	uint32 depth;
+	FName Name;
 
 public:
-	void Save(const FString& fileName);
-	void Load(const FString& fileName);
+	FChunk& GetChunk(const FIntRect& Coordinates);
 
-	Chunk& GetChunk(int x, int y, int z);
+	void Save(const FString& FileName);
+	void Load(const FString& FileName);
 
 	UVoxelMapData();
 	~UVoxelMapData();
