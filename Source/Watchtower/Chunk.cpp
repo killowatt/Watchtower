@@ -4,33 +4,31 @@
 #include "Chunk.h"
 #include "ChunkGenerator.h"
 
+FBlock& AChunk::GetBlockLocal(const FIntVector& Coordinates)
+{
+	return MapData->GetBlock(MapCoordinates + Coordinates);
+}
+FBlock& AChunk::GetBlockLocal(int32 X, int32 Y, int32 Z)
+{
+	return GetBlockLocal(FIntVector(X, Y, Z));
+}
+
+const FIntVector& AChunk::GetVolumeSize() const
+{
+	return VolumeSize;
+}
+
+void AChunk::SetRelativeMapData(UVoxelMapData* MapData,
+	const FIntVector& MapCoordinates, const FIntVector& VolumeSize)
+{
+	this->MapData = MapData;
+	this->MapCoordinates = MapCoordinates;
+	this->VolumeSize = VolumeSize;
+}
 void AChunk::Generate()
 {
-	FColor col = FColor::MakeRandomColor();
-
-	uint32 r = FMath::RandRange(1, 15);
-	//r = 64;
-	for (int x = 0; x < 16; x++)
-	{
-		for (int y = 0; y < 16; y++)
-		{
-			for (uint32 z = 0; z < r; z++)
-			{
-				ChunkData->GetBlock(x, y, z).Active = true;
-				ChunkData->GetBlock(x, y, z).Color = col;
-			}
-		}
-	}
-
-	ChunkData->GetBlock(4, 4, r).Active = true;
-	ChunkData->GetBlock(4, 4, r).Color = FColor::Red;
-	ChunkData->GetBlock(12, 12, r).Active = true;
-	ChunkData->GetBlock(12, 12, r).Color = FColor::Green;
-
-	FChunkGenerator Generator(ChunkData, RuntimeMesh);
+	FChunkGenerator Generator(this, RuntimeMesh);
 	Generator.Generate();
-
-	//SetActorScale3D(FVector(100, 100, 100));
 }
 
 // Sets default values
@@ -43,12 +41,9 @@ AChunk::AChunk()
 	RootComponent = RuntimeMesh;
 
 	static ConstructorHelpers::FObjectFinder<UMaterial> Material(TEXT("/Game/ChunkMaterial"));
-
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("fail if no procede msg"));
-	if (Material.Object != NULL)
+	if (Material.Object)
 	{
-		material = (UMaterial*)Material.Object;
-		RuntimeMesh->SetMaterial(0, material);
+		RuntimeMesh->SetMaterial(0, (UMaterial*)Material.Object);
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("got material"));
 	}
 }
@@ -63,8 +58,7 @@ void AChunk::OnConstruction(const FTransform& Transform)
 
 
 	// TEmp
-	ChunkData = new FChunk();
-	Generate();
+	//ChunkData = new FChunk();
 
 
 

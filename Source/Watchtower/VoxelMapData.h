@@ -18,19 +18,6 @@ struct FBlock
 
 	FBlock();
 };
-struct FChunk
-{
-	static const int WIDTH = 16;
-	static const int DEPTH = 16;
-	static const int HEIGHT = 128;
-	
-	FBlock& GetBlock(int32 X, int32 Y, int32 Z);
-	FBlock& GetBlock(const FIntVector& Coordinate);
-
-	FBlock Blocks[WIDTH * HEIGHT * DEPTH];
-
-	FChunk();
-};
 
 UCLASS()
 class WATCHTOWER_API UVoxelMapData : public UObject
@@ -38,13 +25,17 @@ class WATCHTOWER_API UVoxelMapData : public UObject
 	GENERATED_BODY()
 
 private:
-	TArray<FChunk> Chunks;
+	TArray<FBlock> Blocks;
 	FIntVector Size;
 
 	FName Name;
 
 public:
-	FChunk& GetChunk(const FIntRect& Coordinates);
+	FBlock& GetBlock(int32 X, int32 Y, int32 Z);
+	FBlock& GetBlock(const FIntVector& Coordinates);
+	uint32 GetBlockIndex(int32 X, int32 Y, int32 Z) const;
+
+	const FIntVector& GetSize() const;
 
 	void Save(const FString& FileName);
 	void Load(const FString& FileName);

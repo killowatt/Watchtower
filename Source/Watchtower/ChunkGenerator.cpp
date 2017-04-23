@@ -3,193 +3,6 @@
 #include "Watchtower.h"
 #include "ChunkGenerator.h"
 
-inline void FChunkGenerator::UpdateActiveFaces(uint32 x, uint32 y, uint32 z)
-{
-	xPositive = true;
-	if (x < FChunk::WIDTH - 1)
-		xPositive = !Chunk->GetBlock(x + 1, y, z).Active;
-
-	xNegative = true;
-	if (x > 0)
-		xNegative = !Chunk->GetBlock(x - 1, y, z).Active;
-
-	yPositive = true;
-	if (y < FChunk::DEPTH - 1)
-		yPositive = !Chunk->GetBlock(x, y + 1, z).Active;
-
-	yNegative = true;
-	if (y > 0)
-		yNegative = !Chunk->GetBlock(x, y - 1, z).Active;
-
-	zPositive = true;
-	if (z < FChunk::HEIGHT - 1)
-		zPositive = !Chunk->GetBlock(x, y, z + 1).Active;
-
-	zNegative = true;
-	if (z > 0)
-		zNegative = !Chunk->GetBlock(x, y, z - 1).Active;
-}
-
-inline void FChunkGenerator::AppendVertex(float x, float y, float z, FVector Offset)
-{
-	Vertices.Add(FVector(x * Scale, y * Scale, z * Scale) + Offset * Scale);
-}
-inline void FChunkGenerator::AppendNormal(FVector Normal)
-{
-	Normals.Add(Normal);
-	Normals.Add(Normal);
-	Normals.Add(Normal);
-	Normals.Add(Normal);
-}
-inline void FChunkGenerator::AppendColor(FColor Color)
-{
-	Colors.Add(Color);
-	Colors.Add(Color);
-	Colors.Add(Color);
-	Colors.Add(Color);
-}
-inline void FChunkGenerator::AppendTriangles()
-{
-	int32 Count = Vertices.Num();
-
-	Triangles.Add(Count - 1);
-	Triangles.Add(Count - 2);
-	Triangles.Add(Count - 4);
-	Triangles.Add(Count - 2);
-	Triangles.Add(Count - 3);
-	Triangles.Add(Count - 4);
-
-	// Flipped Face Mode
-	//triangles.Add(count - 4);
-	//triangles.Add(count - 3);
-	//triangles.Add(count - 2);
-	//triangles.Add(count - 4);
-	//triangles.Add(count - 2);
-	//triangles.Add(count - 1);
-}
-
-void FChunkGenerator::GenerateBlockData(FVector Position, FColor Color)
-{
-	if (xPositive)
-	{
-		AppendVertex(0.5f, -0.5f, -0.5f, Position); // We need 24 verts otherwise normals would be incorrect.
-		AppendVertex(0.5f, 0.5f, -0.5f, Position);
-		AppendVertex(0.5f, 0.5f, 0.5f, Position);
-		AppendVertex(0.5f, -0.5f, 0.5f, Position);
-
-		AppendColor(Color);
-		AppendNormal(FVector(1, 0, 0));
-		AppendTriangles();
-	}
-	if (xNegative)
-	{
-		AppendVertex(-0.5f, -0.5f, -0.5f, Position);
-		AppendVertex(-0.5f, -0.5f, 0.5f, Position);
-		AppendVertex(-0.5f, 0.5f, 0.5f, Position);
-		AppendVertex(-0.5f, 0.5f, -0.5f, Position);
-
-		AppendColor(Color);
-		AppendNormal(FVector(-1, 0, 0));
-		AppendTriangles();
-	}
-	if (yPositive)
-	{
-		AppendVertex(-0.5f, 0.5f, -0.5f, Position);
-		AppendVertex(-0.5f, 0.5f, 0.5f, Position);
-		AppendVertex(0.5f, 0.5f, 0.5f, Position);
-		AppendVertex(0.5f, 0.5f, -0.5f, Position);
-
-		AppendColor(Color);
-		AppendNormal(FVector(0, 1, 0));
-		AppendTriangles();
-	}
-	if (yNegative)
-	{
-		AppendVertex(-0.5f, -0.5f, -0.5f, Position);
-		AppendVertex(0.5f, -0.5f, -0.5f, Position);
-		AppendVertex(0.5f, -0.5f, 0.5f, Position);
-		AppendVertex(-0.5f, -0.5f, 0.5f, Position);
-
-		AppendColor(Color);
-		AppendNormal(FVector(0, -1, 0));
-		AppendTriangles();
-	}
-	if (zPositive)
-	{
-		AppendVertex(-0.5f, -0.5f, 0.5f, Position);
-		AppendVertex(0.5f, -0.5f, 0.5f, Position);
-		AppendVertex(0.5f, 0.5f, 0.5f, Position);
-		AppendVertex(-0.5f, 0.5f, 0.5f, Position);
-
-		AppendColor(Color);
-		AppendNormal(FVector(0, 0, 1));
-		AppendTriangles();
-	}
-	if (zNegative)
-	{
-		AppendVertex(-0.5f, -0.5f, -0.5f, Position);
-		AppendVertex(-0.5f, 0.5f, -0.5f, Position);
-		AppendVertex(0.5f, 0.5f, -0.5f, Position);
-		AppendVertex(0.5f, -0.5f, -0.5f, Position);
-
-		AppendColor(Color);
-		AppendNormal(FVector(0, 0, -1));
-		AppendTriangles();
-	}
-}
-
-//void FChunkGenerator::Generate()
-//{
-//	uint32 VertexArraySize = 0;
-//	uint32 TriangleArraySize = 0;
-//
-//	// Calculate the reserve size for the arrays.
-//	for (int x = 0; x < FChunk::WIDTH; x++)
-//	{
-//		for (int y = 0; y < FChunk::DEPTH; y++)
-//		{
-//			for (int z = 0; z < FChunk::HEIGHT; z++)
-//			{
-//				if (!Chunk->GetBlock(x, y, z).Active)
-//					continue;
-//
-//				UpdateActiveFaces(x, y, z);
-//				int sides = xPositive + xNegative + yPositive + yNegative + zPositive + zNegative;
-//				VertexArraySize += sides * 4;
-//				TriangleArraySize += sides * 6;
-//			}
-//		}
-//	}
-//
-//	// Disregard completely empty chunks
-//	if (VertexArraySize <= 0 || TriangleArraySize <= 0)
-//		return;
-//
-//	Vertices.Reserve(VertexArraySize);
-//	Colors.Reserve(VertexArraySize);
-//	Normals.Reserve(VertexArraySize);
-//	Triangles.Reserve(TriangleArraySize);
-//
-//	// Create the vertex data
-//	for (int x = 0; x < FChunk::WIDTH; x++)
-//	{
-//		for (int y = 0; y < FChunk::DEPTH; y++)
-//		{
-//			for (int z = 0; z < FChunk::HEIGHT; z++)
-//			{
-//				if (!Chunk->GetBlock(x, y, z).Active)
-//					continue;
-//
-//				UpdateActiveFaces(x, y, z);
-//				GenerateBlockData(FVector(x, y, z), Chunk->GetBlock(x, y, z).Color);
-//			}
-//		}
-//	}
-//
-//	Mesh->CreateMeshSection(0, Vertices, Triangles, Normals, TextureCoordinates, Colors,
-//		Tangents);
-//}
-
 struct FMeshData
 {
 	TArray<FVector> Vertices;
@@ -249,7 +62,6 @@ static const FVector BlockRightVectors[6] =
 };
 static const uint8 BlockDirectionAxis[6] = { 1, 1, 2, 2, 0, 0 };
 
-
 FIntVector GetAdjacentCoordinate(FIntVector x, uint8 Side)
 {
 	return x + BlockForwardDirections[Side];
@@ -257,7 +69,7 @@ FIntVector GetAdjacentCoordinate(FIntVector x, uint8 Side)
 FBlockFace FChunkGenerator::GetBlockFace(const FIntVector& InCoordinate, uint8 Side) const
 {
 
-	uint8 BlockType = Chunk->GetBlock(InCoordinate).Active;
+	uint8 BlockType = Chunk->GetBlockLocal(InCoordinate).Active;
 
 	FBlockFace Face;
 	Face.Side = Side;
@@ -267,7 +79,7 @@ FBlockFace FChunkGenerator::GetBlockFace(const FIntVector& InCoordinate, uint8 S
 	if (!Face.bCulled)
 	{
 		FIntVector AdjacentCoordinate = GetAdjacentCoordinate(InCoordinate, Side);
-		uint8 AdjacentBlockType = Chunk->GetBlock(AdjacentCoordinate).Active;
+		uint8 AdjacentBlockType = Chunk->GetBlockLocal(AdjacentCoordinate).Active;
 
 		if (AdjacentBlockType != 0)
 		{
@@ -280,7 +92,7 @@ FBlockFace FChunkGenerator::GetBlockFace(const FIntVector& InCoordinate, uint8 S
 
 void FChunkGenerator::Generate()
 {
-	FVector VolumeSize = FVector(16, 16, 128);
+	FIntVector VolumeSize = Chunk->GetVolumeSize();
 
 	TArray<FMeshData> MeshData;
 	//TSet<UMaterialInterface*> Materials;
@@ -493,16 +305,10 @@ void FChunkGenerator::Generate()
 	//Mesh->CreateMeshSection(0, Vertices, Triangles, Normals, TextureCoordinates, Colors, Tangents);
 }
 
-FChunkGenerator::FChunkGenerator(FChunk* TargetChunk, URuntimeMeshComponent* TargetMesh)
+FChunkGenerator::FChunkGenerator(AChunk* Target, URuntimeMeshComponent* TargetMesh)
 {
-	Chunk = TargetChunk;
+	Chunk = Target;
 	Mesh = TargetMesh;
-
-
-
-
-
-
 }
 FChunkGenerator::~FChunkGenerator()
 {

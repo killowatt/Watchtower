@@ -3,20 +3,6 @@
 #include "Watchtower.h"
 #include "VoxelMapData.h"
 
-FBlock& FChunk::GetBlock(int32 X, int32 Y, int32 Z)
-{
-	if (X >= WIDTH || Y >= DEPTH || Z >= HEIGHT ||
-		X < 0 || Y < 0 || Z < 0)
-	{
-		return FBlock::Default;
-	}
-	return Blocks[X + Y * WIDTH + Z * WIDTH * DEPTH];
-}
-FBlock& FChunk::GetBlock(const FIntVector& Coordinates)
-{
-	return GetBlock(Coordinates.X, Coordinates.Y, Coordinates.Z);
-}
-
 FBlock::FBlock()
 {
 	Active = false;
@@ -24,8 +10,27 @@ FBlock::FBlock()
 }
 FBlock FBlock::Default = FBlock();
 
-FChunk::FChunk()
+FBlock& UVoxelMapData::GetBlock(int32 X, int32 Y, int32 Z)
 {
+	if (X >= Size.X || Y >= Size.Y || Z >= Size.Z ||
+		X < 0 || Y < 0 || Z < 0)
+	{
+		return FBlock::Default;
+	}
+	return Blocks[GetBlockIndex(X, Y, Z)];
+}
+FBlock& UVoxelMapData::GetBlock(const FIntVector& Coordinates)
+{
+	return GetBlock(Coordinates.X, Coordinates.Y, Coordinates.Z);
+}
+FORCEINLINE uint32 UVoxelMapData::GetBlockIndex(int32 X, int32 Y, int32 Z) const
+{
+	return X + Y * Size.X + Z * Size.X * Size.Y;
+}
+
+FORCEINLINE const FIntVector& UVoxelMapData::GetSize() const
+{
+	return Size;
 }
 
 void UVoxelMapData::Save(const FString& FileName)
@@ -39,26 +44,34 @@ void UVoxelMapData::Save(const FString& FileName)
 }
 void UVoxelMapData::Load(const FString& FileName)
 {
-	//// Layla's
-	//TArray<uint8> CompressedData;
-	//if (!FFileHelper::LoadFileToArray(CompressedData, *(FPaths::GameContentDir() + FileName + ".map")))
-	//{
-	//	return;
-	//}
+	// Layla's
+	TArray<uint8> CompressedData;
+	if (!FFileHelper::LoadFileToArray(CompressedData, *(FPaths::GameContentDir() + FileName + ".map")))
+	{
+		return;
+	}
 
-	//FMemoryReader MemoryReader(CompressedData, true);
+	FMemoryReader MemoryReader(CompressedData, true);
 
-	//MemoryReader << Size;
-	//Size = FIntVector(Size.X, Size.Z, Size.Y);
-	////Blocks.SetNum(Size.X * Size.Y * Size.Z);
-	//MemoryReader.Serialize(Blocks.GetData(), Blocks.Num());
+	TArray<uint8> BlockData;
+
+	MemoryReader << Size;
+	Size = FIntVector(Size.X, Size.Z, Size.Y);
+
+	Blocks.SetNum(Size.X * Size.Y * Size.Z);
+	BlockData.SetNum(Size.X * Size.Y * Size.Z);
+
+	MemoryReader.Serialize(BlockData.GetData(), BlockData.Num());
+
+	for (int32 x = 0; x < BlockData.Num(); x++)
+	{
+		Blocks[x].Active = BlockData[x] > 0;
+	}
 }
 
 UVoxelMapData::UVoxelMapData()
 {
-	//Name = FName(TEXT("DefaultMap"));
 }
-
 UVoxelMapData::~UVoxelMapData()
 {
 }
