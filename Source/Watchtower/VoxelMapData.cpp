@@ -45,28 +45,69 @@ void UVoxelMapData::Save(const FString& FileName)
 void UVoxelMapData::Load(const FString& FileName)
 {
 	// Layla's
-	TArray<uint8> CompressedData;
-	if (!FFileHelper::LoadFileToArray(CompressedData, *(FPaths::GameContentDir() + FileName + ".map")))
+	Blocks.SetNum(64 * 64 * 128);
+	Size = FIntVector(64, 64, 128);
+
+	for (int32 x = 0; x < 64; x++)
 	{
-		return;
+		for (int32 y = 0; y < 64; y++)
+		{
+			int32 level = FMath::RandRange(0, 255);
+			for (int32 z = 0; z < 128; z++)
+			{
+				Blocks[GetBlockIndex(x, y, z)].Active = true;
+				Blocks[GetBlockIndex(x, y, z)].Color = FColor(z * 2, 30, 155, 255);
+				Blocks[GetBlockIndex(x, y, z)].Color = FColor(level, 155, 255);
+			}
+		}
 	}
 
-	FMemoryReader MemoryReader(CompressedData, true);
+	//TArray<uint8> CompressedData;
+	//if (!FFileHelper::LoadFileToArray(CompressedData, *(FPaths::GameContentDir() + FileName + ".map")))
+	//{
+	//	return;
+	//}
 
-	TArray<uint8> BlockData;
+	//FMemoryReader MemoryReader(CompressedData, true);
 
-	MemoryReader << Size;
-	Size = FIntVector(Size.X, Size.Z, Size.Y);
+	//TArray<uint8> BlockData;
 
-	Blocks.SetNum(Size.X * Size.Y * Size.Z);
-	BlockData.SetNum(Size.X * Size.Y * Size.Z);
+	//MemoryReader << Size;
+	//Size = FIntVector(Size.X, Size.Z, Size.Y);
 
-	MemoryReader.Serialize(BlockData.GetData(), BlockData.Num());
+	//Blocks.SetNum(Size.X * Size.Y * Size.Z);
+	//BlockData.SetNum(Size.X * Size.Y * Size.Z);
 
-	for (int32 x = 0; x < BlockData.Num(); x++)
-	{
-		Blocks[x].Active = BlockData[x] > 0;
-	}
+	//MemoryReader.Serialize(BlockData.GetData(), BlockData.Num());
+
+	//FColor colorpal[] = {
+	//	FColor(255, 0, 0, 255),
+	//	FColor(0, 255, 0, 255),
+	//	FColor(0, 0, 255, 255),
+	//	FColor(255, 255, 0, 255),
+	//	FColor(0, 255, 255, 255),
+	//	FColor(64, 0, 0, 255),
+	//	FColor(0, 0, 0, 255),
+	//	FColor(255, 255, 255, 255) };
+
+
+	//for (int32 x = 0; x < BlockData.Num(); x++)
+	//{
+	//	Blocks[x].Active = BlockData[x] > 0;
+	//	uint8 type = BlockData[x];
+
+	//	if (type > 0)
+	//	{
+	//		if (type > 7)
+	//		{
+	//			Blocks[x].Color = FColor::Magenta;
+	//		}
+	//		else
+	//		{
+	//			Blocks[x].Color = colorpal[type];
+	//		}
+	//	}
+	//}
 }
 
 UVoxelMapData::UVoxelMapData()

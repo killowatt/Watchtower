@@ -68,20 +68,19 @@ FIntVector GetAdjacentCoordinate(FIntVector x, uint8 Side)
 }
 FBlockFace FChunkGenerator::GetBlockFace(const FIntVector& InCoordinate, uint8 Side) const
 {
-
-	uint8 BlockType = Chunk->GetBlockLocal(InCoordinate).Active;
+	FBlock Block = Chunk->GetBlockLocal(InCoordinate);
 
 	FBlockFace Face;
 	Face.Side = Side;
-	Face.bCulled = BlockType == 0;
-	Face.Type = BlockType;
+	Face.bCulled = !Block.Active;
+	Face.Color = Block.Color;
 
 	if (!Face.bCulled)
 	{
 		FIntVector AdjacentCoordinate = GetAdjacentCoordinate(InCoordinate, Side);
-		uint8 AdjacentBlockType = Chunk->GetBlockLocal(AdjacentCoordinate).Active;
+		FColor AdjacentBlockType = Chunk->GetBlockLocal(AdjacentCoordinate).Color;
 
-		if (AdjacentBlockType != 0)
+		if (Chunk->GetBlockLocal(AdjacentCoordinate).Active != 0)
 		{
 			Face.bCulled = true;
 		}
@@ -111,7 +110,7 @@ void FChunkGenerator::Generate()
 	TArray<FBlockFace> BlockFaceMask;
 	BlockFaceMask.SetNum(VolumeSize.X * VolumeSize.Y * VolumeSize.Z);
 
-	FLinearColor Col = FLinearColor::MakeRandomColor();
+	//FLinearColor Col = FLinearColor::MakeRandomColor();
 
 	for (int32 FaceSide = 0; FaceSide < 6; ++FaceSide)
 	{
@@ -136,7 +135,7 @@ void FChunkGenerator::Generate()
 				{
 					FaceB.bCulled = true;
 					FaceB.Side = FaceSide;
-					FaceB.Type = 0;
+					FaceB.Color = FColor(255, 255, 255, 255);
 
 					// face of this block
 					FaceA = GetBlockFace(BlockPosition, FaceSide);
@@ -229,12 +228,8 @@ void FChunkGenerator::Generate()
 						static int triangleIndices[6] = { 0, 1, 2, 2, 3, 0 };
 
 						uint8 BlockSide = BlockFaceMask[MaskIndex].Side;
-						uint8 BlockTypeIndex = BlockFaceMask[MaskIndex].Type;
+						FColor BlockColor = BlockFaceMask[MaskIndex].Color;
 
-						if (BlockTypeIndex > 1)
-						{
-							BlockTypeIndex = 1;
-						}
 
 						//UBlockType* BlockType = BlockTypeDatabase->BlockTypes[BlockTypeIndex];
 						//UMaterialInterface* MeshMaterial = BlockType->Materials[BlockSide].Material;
@@ -268,7 +263,7 @@ void FChunkGenerator::Generate()
 							//UV0.Add(UV);
 							Vertices.Add(vertexPosition * FBlock::SIZE);
 							Normals.Add(BlockForwardVectors[BlockSide]);
-							VertexColors.Add(Col.ToFColor(false));
+							VertexColors.Add(BlockColor);
 
 							Triangles.Add(NumIndices + VertexIndex);
 						}

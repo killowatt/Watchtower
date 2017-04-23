@@ -7,19 +7,19 @@
 struct FBlockFace
 {
 	bool bCulled;
-	uint8 Type;
+	FColor Color;
 	uint8 Side;
 
 	FBlockFace()
 	{
 		bCulled = false;
-		Type = 0;
+		Color = FColor(32, 32, 32, 255);
 		Side = 0;
 	}
 
 	FORCEINLINE bool Equals(const FBlockFace& Face) const
 	{
-		return Face.bCulled == bCulled && Face.Type == Type;
+		return Face.bCulled == bCulled && Color == Face.Color;
 	}
 };
 
