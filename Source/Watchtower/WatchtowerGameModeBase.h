@@ -16,5 +16,7 @@ class WATCHTOWER_API AWatchtowerGameModeBase : public AGameModeBase
 public:
 	//UVoxelMapData MapData;
 
+	AWatchtowerGameModeBase(const FObjectInitializer& ObjectInitializer);
+
 	virtual void StartPlay() override;
 };

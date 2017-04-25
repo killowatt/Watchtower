@@ -44,7 +44,6 @@ AChunk::AChunk()
 	if (Material.Object)
 	{
 		RuntimeMesh->SetMaterial(0, (UMaterial*)Material.Object);
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("got material"));
 	}
 }
 
@@ -55,23 +54,4 @@ void AChunk::BeginPlay()
 }
 void AChunk::OnConstruction(const FTransform& Transform)
 {
-
-
-	// TEmp
-	//ChunkData = new FChunk();
-
-
-
-	//TArray<FVector> Vertices;
-	//TArray<FVector> Normals;
-	//TArray<FRuntimeMeshTangent> Tangents;
-	//TArray<FVector2D> TextureCoordinates;
-	//TArray<int32> Triangles;
-
-	//URuntimeMeshLibrary::CreateBoxMesh(FVector(100, 100, 100), Vertices, Triangles, Normals, TextureCoordinates, Tangents);
-
-
-
-	//// Create the mesh section specifying collision
-	//RuntimeMesh->CreateMeshSection(0, Vertices, Triangles, Normals, TextureCoordinates, TArray<FColor>(), Tangents, true, EUpdateFrequency::Infrequent);
 }
