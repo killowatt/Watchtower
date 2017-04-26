@@ -21,6 +21,8 @@ void AVoxelPlayer::BeginPlay()
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("VoxelPlayer"));
 	}
+
+
 }
 void AVoxelPlayer::SetupPlayerInputComponent(UInputComponent* InputComponent)
 {

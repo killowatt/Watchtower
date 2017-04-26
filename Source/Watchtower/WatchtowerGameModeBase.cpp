@@ -58,5 +58,11 @@ void AWatchtowerGameModeBase::StartPlay()
 AWatchtowerGameModeBase::AWatchtowerGameModeBase(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	DefaultPawnClass = AVoxelPlayer::StaticClass();
+	//DefaultPawnClass = AVoxelPlayer::StaticClass();
+
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnObject(TEXT("/Game/BP_VoxelPlayer"));
+	if (PlayerPawnObject.Class != NULL)
+	{
+		DefaultPawnClass = PlayerPawnObject.Class;
+	}
 }

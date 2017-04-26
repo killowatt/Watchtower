@@ -46,9 +46,6 @@ SourceArt/**/*.tga
 # Binary Files
 Binaries/*
 
-# Content
-Content/*
-
 # Builds
 Build/*
 
@@ -60,6 +57,9 @@ Saved/*
 
 # Compiled source files for the engine to use
 Intermediate/*
+
+# Content
+Content/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
