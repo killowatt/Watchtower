@@ -6,6 +6,7 @@
 #include "Chunk.h"
 #include "VoxelMapData.h"
 #include "VoxelPlayer.h"
+#include "VoxelPlayerController.h"
 
 void AWatchtowerGameModeBase::StartPlay()
 {
@@ -59,7 +60,10 @@ AWatchtowerGameModeBase::AWatchtowerGameModeBase(const class FObjectInitializer&
 	: Super(ObjectInitializer)
 {
 	//DefaultPawnClass = AVoxelPlayer::StaticClass();
+	PlayerControllerClass = AVoxelPlayerController::StaticClass();
 
+
+	// temp, use commented above 
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnObject(TEXT("/Game/BP_VoxelPlayer"));
 	if (PlayerPawnObject.Class != NULL)
 	{

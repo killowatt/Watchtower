@@ -3,6 +3,10 @@
 #include "Watchtower.h"
 #include "VoxelPlayer.h"
 
+#include "Chunk.h"
+#include "VoxelMapData.h"
+#include "VoxelPlayer.h"
+#include "VoxelPlayerController.h"
 
 // Sets default values
 AVoxelPlayer::AVoxelPlayer()
@@ -10,6 +14,8 @@ AVoxelPlayer::AVoxelPlayer()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	bReplicates = true;
+	bReplicateMovement = true;
 }
 
 // Called when the game starts or when spawned
@@ -20,56 +26,39 @@ void AVoxelPlayer::BeginPlay()
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("VoxelPlayer"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Building Chunk"));
 	}
 
+	UVoxelMapData* MapData = NewObject<UVoxelMapData>();
+	MapData->Load("bin");
 
-}
-void AVoxelPlayer::SetupPlayerInputComponent(UInputComponent* InputComponent)
-{
-	// set up gameplay key bindings
-	InputComponent->BindAxis("MoveForward", this, &AVoxelPlayer::MoveForward);
-	InputComponent->BindAxis("MoveRight", this, &AVoxelPlayer::MoveRight);
-	InputComponent->BindAxis("LookX", this, &AVoxelPlayer::AddControllerYawInput);
-	InputComponent->BindAxis("LookY", this, &AVoxelPlayer::AddControllerPitchInput);
-	InputComponent->BindAction("Jump", IE_Pressed, this, &AVoxelPlayer::OnStartJump);
-	InputComponent->BindAction("Jump", IE_Released, this, &AVoxelPlayer::OnStopJump);
-}
+	FIntVector MapSize = MapData->GetSize();
+	int32 RemainderX = MapSize.X % 16;
+	int32 RemainderY = MapSize.Y % 16;
 
-void AVoxelPlayer::MoveForward(float Value)
-{
-	if ((Controller != NULL) && (Value != 0.0f))
+	int32 CompleteChunksX = (MapSize.X - RemainderX) / 16;
+	int32 CompleteChunksY = (MapSize.Y - RemainderY) / 16;
+
+	TArray<AChunk*> Chunks;
+
+	for (int X = 0; X < CompleteChunksX + (RemainderX > 0); X++)
 	{
-		// find out which way is forward
-		FRotator Rotation = Controller->GetControlRotation();
-		// Limit pitch when walking or falling
-		if (GetCharacterMovement()->IsMovingOnGround() || GetCharacterMovement()->IsFalling())
+		for (int Y = 0; Y < CompleteChunksY + (RemainderY > 0); Y++)
 		{
-			Rotation.Pitch = 0.0f;
-		}
-		// add movement in that direction
-		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::X);
-		AddMovementInput(Direction, Value);
-	}
-}
-void AVoxelPlayer::MoveRight(float Value)
-{
-	if ((Controller != NULL) && (Value != 0.0f))
-	{
-		// find out which way is right
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::Y);
-		// add movement in that direction
-		AddMovementInput(Direction, Value);
-	}
-}
+			FIntVector ChunkSize(16, 16, 128);
+			if (X > CompleteChunksX)
+				ChunkSize.X = RemainderX;
+			if (Y > CompleteChunksY)
+				ChunkSize.Y = RemainderY;
 
-void AVoxelPlayer::OnStartJump()
-{
-	bPressedJump = true;
-}
-void AVoxelPlayer::OnStopJump()
-{
-	bPressedJump = false;
+			AChunk* Chunk = GetWorld()->
+				SpawnActor<AChunk>(FVector(X * 16 * 100, Y * 16 * 100, 0), FRotator::ZeroRotator);
+			Chunk->SetRelativeMapData(MapData, FIntVector(X * 16, Y * 16, 0), ChunkSize);
+			Chunk->Generate();
+
+			Chunks.Add(Chunk);
+		}
+	}
 }
 
 // Called every frame

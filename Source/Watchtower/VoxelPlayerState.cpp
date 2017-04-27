@@ -3,6 +3,10 @@
 #include "Watchtower.h"
 #include "VoxelPlayerState.h"
 
-
+AVoxelPlayerState::AVoxelPlayerState(const FObjectInitializer& ObjectInitializer) :
+	Super(ObjectInitializer)
+{
+	bReplicates = true;
+}
 
 

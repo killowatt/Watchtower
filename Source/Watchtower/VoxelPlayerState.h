@@ -18,5 +18,5 @@ public:
 
 	int32 Health;
 	
-	
+	AVoxelPlayerState(const FObjectInitializer& ObjectInitializer);
 };
