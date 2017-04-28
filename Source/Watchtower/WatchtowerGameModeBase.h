@@ -14,7 +14,8 @@ class WATCHTOWER_API AWatchtowerGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 public:
-	//UVoxelMapData MapData;
+	UPROPERTY()
+	UVoxelMapData* MapData;
 
 	AWatchtowerGameModeBase(const FObjectInitializer& ObjectInitializer);
 

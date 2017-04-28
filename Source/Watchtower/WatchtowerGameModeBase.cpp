@@ -12,7 +12,7 @@ void AWatchtowerGameModeBase::StartPlay()
 {
 	Super::StartPlay();
 
-	UVoxelMapData* MapData = NewObject<UVoxelMapData>();
+	MapData = NewObject<UVoxelMapData>();
 	MapData->Load("bin");
 
 	FIntVector MapSize = MapData->GetSize();
@@ -21,8 +21,6 @@ void AWatchtowerGameModeBase::StartPlay()
 
 	int32 CompleteChunksX = (MapSize.X - RemainderX) / 16;
 	int32 CompleteChunksY = (MapSize.Y - RemainderY) / 16;
-
-	TArray<AChunk*> Chunks;
 
 	for (int X = 0; X < CompleteChunksX + (RemainderX > 0); X++)
 	{
@@ -39,7 +37,7 @@ void AWatchtowerGameModeBase::StartPlay()
 			Chunk->SetRelativeMapData(MapData, FIntVector(X * 16, Y * 16, 0), ChunkSize);
 			Chunk->Generate();
 
-			Chunks.Add(Chunk);
+			MapData->Chunks.Add(Chunk);
 		}
 	}
 	//for (int x = 0; x < 64; x++)
@@ -59,14 +57,14 @@ void AWatchtowerGameModeBase::StartPlay()
 AWatchtowerGameModeBase::AWatchtowerGameModeBase(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	//DefaultPawnClass = AVoxelPlayer::StaticClass();
+	DefaultPawnClass = AVoxelPlayer::StaticClass();
 	PlayerControllerClass = AVoxelPlayerController::StaticClass();
 
-
+	MapData = nullptr;
 	// temp, use commented above 
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnObject(TEXT("/Game/BP_VoxelPlayer"));
-	if (PlayerPawnObject.Class != NULL)
-	{
-		DefaultPawnClass = PlayerPawnObject.Class;
-	}
+	//static ConstructorHelpers::FClassFinder<APawn> PlayerPawnObject(TEXT("/Game/BP_VoxelPlayer"));
+	//if (PlayerPawnObject.Class != NULL)
+	//{
+	//	DefaultPawnClass = PlayerPawnObject.Class;
+	//}
 }

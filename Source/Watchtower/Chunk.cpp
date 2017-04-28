@@ -31,11 +31,23 @@ void AChunk::Generate()
 	Generator.Generate();
 }
 
+void AChunk::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime); // Call parent class tick function  
+
+	if (PleaseUpdate)
+	{
+		Generate();
+		PleaseUpdate = false;
+	}
+}
+
+
 // Sets default values
 AChunk::AChunk()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	RuntimeMesh = CreateDefaultSubobject<URuntimeMeshComponent>(TEXT("Runtime Mesh"));
 	RootComponent = RuntimeMesh;
@@ -45,6 +57,10 @@ AChunk::AChunk()
 	{
 		RuntimeMesh->SetMaterial(0, (UMaterial*)Material.Object);
 	}
+
+
+
+	PleaseUpdate = false;
 }
 
 // Called when the game starts or when spawned

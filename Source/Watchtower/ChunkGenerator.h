@@ -30,7 +30,7 @@ private:
 	URuntimeMeshComponent* Mesh;
 
 private:
-	static const uint32 Scale = FBlock::SIZE;
+	static const uint32 Scale = FBlock::Size;
 
 	FBlockFace GetBlockFace(const FIntVector& InCoordinate, uint8 Side) const;
 

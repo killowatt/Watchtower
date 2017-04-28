@@ -7,6 +7,8 @@
 #include "VoxelMapData.h"
 #include "VoxelPlayer.h"
 #include "VoxelPlayerController.h"
+#include "VoxelPlayerState.h"
+#include "VoxelGameState.h"
 
 void AOnlineTestGameMode::PostLogin(APlayerController* NewPlayer)
 {
@@ -26,7 +28,8 @@ AOnlineTestGameMode::AOnlineTestGameMode(const class FObjectInitializer& ObjectI
 {
 	//DefaultPawnClass = AVoxelPlayer::StaticClass();
 	PlayerControllerClass = AVoxelPlayerController::StaticClass();
-
+	PlayerStateClass = AVoxelPlayerState::StaticClass();
+	GameStateClass = AVoxelGameState::StaticClass();
 
 	// temp, use commented above 
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnObject(TEXT("/Game/BP_VoxelPlayer"));

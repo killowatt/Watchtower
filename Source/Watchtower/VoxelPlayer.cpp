@@ -26,38 +26,7 @@ void AVoxelPlayer::BeginPlay()
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("VoxelPlayer"));
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Building Chunk"));
-	}
 
-	UVoxelMapData* MapData = NewObject<UVoxelMapData>();
-	MapData->Load("bin");
-
-	FIntVector MapSize = MapData->GetSize();
-	int32 RemainderX = MapSize.X % 16;
-	int32 RemainderY = MapSize.Y % 16;
-
-	int32 CompleteChunksX = (MapSize.X - RemainderX) / 16;
-	int32 CompleteChunksY = (MapSize.Y - RemainderY) / 16;
-
-	TArray<AChunk*> Chunks;
-
-	for (int X = 0; X < CompleteChunksX + (RemainderX > 0); X++)
-	{
-		for (int Y = 0; Y < CompleteChunksY + (RemainderY > 0); Y++)
-		{
-			FIntVector ChunkSize(16, 16, 128);
-			if (X > CompleteChunksX)
-				ChunkSize.X = RemainderX;
-			if (Y > CompleteChunksY)
-				ChunkSize.Y = RemainderY;
-
-			AChunk* Chunk = GetWorld()->
-				SpawnActor<AChunk>(FVector(X * 16 * 100, Y * 16 * 100, 0), FRotator::ZeroRotator);
-			Chunk->SetRelativeMapData(MapData, FIntVector(X * 16, Y * 16, 0), ChunkSize);
-			Chunk->Generate();
-
-			Chunks.Add(Chunk);
-		}
 	}
 }
 

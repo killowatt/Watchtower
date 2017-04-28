@@ -23,6 +23,11 @@ protected:
 		void MoveRight(float Value);
 
 	UFUNCTION()
+		void Primary();
+	UFUNCTION()
+		void Secondary();
+
+	UFUNCTION()
 		void OnStartJump();
 	UFUNCTION()
 		void OnStopJump();

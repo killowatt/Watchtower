@@ -25,6 +25,9 @@ protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 
 public:
+	UPROPERTY(VisibleInstanceOnly)
+	bool PleaseUpdate;
+
 	FBlock& GetBlockLocal(const FIntVector& Coordinates);
 	FBlock& GetBlockLocal(int32 X, int32 Y, int32 Z);
 
@@ -34,6 +37,8 @@ public:
 		const FIntVector& Coordinates, const FIntVector& VolumeSize);
 	void Generate();
 	
+	void Tick(float DeltaTime);
+
 	// Sets default values for this actor's properties
 	AChunk();
 };

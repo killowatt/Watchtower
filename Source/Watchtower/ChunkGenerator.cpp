@@ -261,7 +261,7 @@ void FChunkGenerator::Generate()
 							//FVector2D UV = BlockType->GetPointUV(vertexPosition, FVector::ZeroVector, UMapData::BlockUpVectors[BlockSide], UMapData::BlockRightVectors[BlockSide], BlockSide);
 
 							//UV0.Add(UV);
-							Vertices.Add(vertexPosition * FBlock::SIZE);
+							Vertices.Add(vertexPosition * FBlock::Size);
 							Normals.Add(BlockForwardVectors[BlockSide]);
 							VertexColors.Add(BlockColor);
 

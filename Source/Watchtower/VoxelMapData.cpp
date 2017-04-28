@@ -2,6 +2,8 @@
 
 #include "Watchtower.h"
 #include "VoxelMapData.h"
+#include "VoxelMath.h"
+#include "Chunk.h"
 
 FBlock::FBlock()
 {
@@ -31,6 +33,129 @@ FORCEINLINE uint32 UVoxelMapData::GetBlockIndex(int32 X, int32 Y, int32 Z) const
 FORCEINLINE const FIntVector& UVoxelMapData::GetSize() const
 {
 	return Size;
+}
+
+bool UVoxelMapData::Callback(FIntVector Copy, FIntVector Face, FVector Direction, FBlock Block)
+{
+	if (GetBlock(Copy).Active)
+	{
+		if (Block.Active)
+			Copy += Face;
+
+		int32 ChunkX = FMath::FloorToInt(Copy.X / ChunkWidth);
+		int32 ChunkY = FMath::FloorToInt(Copy.Y / ChunkDepth);
+
+		int32 ChunkIndex = 32 * ChunkX + ChunkY;
+		if (Chunks.IsValidIndex(ChunkIndex))
+		{
+
+			GetBlock(Copy) = Block;
+			Chunks[ChunkIndex]->PleaseUpdate = true;
+			return true;
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Invalid Chunk Index"));
+			return false;
+		}
+	}
+	return false;
+}
+void UVoxelMapData::TryRaycastModify(FVector Direction, FVector Position, float Radius, FBlock Block)
+{
+	//
+	Position /= FBlock::Size;
+
+	// do this better ^
+	FIntVector Size = this->Size; // copy for safety
+
+	FIntVector IntPosition = FIntVector(
+		FMath::FloorToInt(Position.X),
+		FMath::FloorToInt(Position.Y),
+		FMath::FloorToInt(Position.Z));
+
+	FVector Step = FVector(
+		FMath::Sign(Direction.X),
+		FMath::Sign(Direction.Y),
+		FMath::Sign(Direction.Z));
+
+	FVector Max = FVector(
+		FVoxelMath::IntBound(Position.X, Direction.X),
+		FVoxelMath::IntBound(Position.Y, Direction.Y),
+		FVoxelMath::IntBound(Position.Z, Direction.Z));
+
+	FVector Delta = Step / Direction;
+	FIntVector Face = FIntVector::ZeroValue;
+
+	if (Direction.IsZero())
+		return; // TODO: log this?
+		
+	Radius /= FMath::Sqrt(
+		Direction.X * Direction.X +
+		Direction.Y * Direction.Y +
+		Direction.Z * Direction.Z);
+
+	while (
+		(Step.X > 0 ? IntPosition.X < Size.X : IntPosition.X >= 0) &&
+		(Step.Y > 0 ? IntPosition.Y < Size.Y : IntPosition.Y >= 0) &&
+		(Step.Z > 0 ? IntPosition.Z < Size.Z : IntPosition.Z >= 0))
+	{
+
+		if (!(IntPosition.X < 0 || IntPosition.Y < 0 || IntPosition.Z < 0 ||
+			IntPosition.X >= Size.X || IntPosition.Y >= Size.Y || IntPosition.Z >= Size.Z))
+		{
+			if (Callback(IntPosition, Face, Direction, Block)) // callback
+				break;
+		}
+
+		if (Max.X < Max.Y)
+		{
+			if (Max.X < Max.Z)
+			{
+				if (Max.X > Radius)
+					break;
+
+				IntPosition.X += Step.X;
+				Max.X += Delta.X;
+
+				Face = FIntVector(-Step.X, 0, 0);
+			}
+			else
+			{
+				if (Max.Z > Radius)
+					break;
+
+				IntPosition.Z += Step.Z;
+				Max.Z += Delta.Z;
+
+				Face = FIntVector(0, 0, -Step.Z);
+			}
+		}
+		else
+		{
+			if (Max.Y < Max.Z)
+			{
+				if (Max.Y > Radius)
+					break;
+
+				IntPosition.Y += Step.Y;
+				Max.Y += Delta.Y;
+
+				Face = FIntVector(0, -Step.Y, 0);
+			}
+			else
+			{
+				// Identical to the second case, repeated for simplicity in
+				// the conditionals.
+				if (Max.Z > Radius)
+					break;
+				IntPosition.Z += Step.Z;
+				Max.Z += Delta.Z;
+
+				Face = FIntVector(0, 0, -Step.Z);
+			}
+		}
+	}
 }
 
 void UVoxelMapData::Save(const FString& FileName)
