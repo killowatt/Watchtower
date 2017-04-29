@@ -3,3 +3,5 @@
 #include "Watchtower.h"
 
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, Watchtower, "Watchtower" );
+
+DEFINE_LOG_CATEGORY(Voxel);

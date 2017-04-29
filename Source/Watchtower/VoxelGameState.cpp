@@ -3,6 +3,10 @@
 #include "Watchtower.h"
 #include "VoxelGameState.h"
 
+void AVoxelGameState::MulticastChunkUpdate_Implementation()
+{
+	UE_LOG(Voxel, Warning, TEXT("Multicast called"));
+}
 
 
 

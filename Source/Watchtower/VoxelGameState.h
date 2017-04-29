@@ -13,7 +13,9 @@ class WATCHTOWER_API AVoxelGameState : public AGameStateBase
 {
 	GENERATED_BODY()
 	
-	
+public:
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastChunkUpdate();
 	
 	
 };

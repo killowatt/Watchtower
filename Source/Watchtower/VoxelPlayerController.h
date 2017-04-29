@@ -18,19 +18,22 @@ private:
 
 protected:
 	UFUNCTION()
-		void MoveForward(float Value);
+	void MoveForward(float Value);
 	UFUNCTION()
-		void MoveRight(float Value);
+	void MoveRight(float Value);
 
 	UFUNCTION()
-		void Primary();
+	void Primary();
 	UFUNCTION()
-		void Secondary();
+	void Secondary();
 
 	UFUNCTION()
-		void OnStartJump();
+	void OnStartJump();
 	UFUNCTION()
-		void OnStopJump();
+	void OnStopJump();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerTryPlace();
 
 public:
 	virtual void SetupInputComponent() override;

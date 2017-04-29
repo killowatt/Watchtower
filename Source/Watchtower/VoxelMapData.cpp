@@ -64,7 +64,6 @@ bool UVoxelMapData::Callback(FIntVector Copy, FIntVector Face, FVector Direction
 void UVoxelMapData::TryRaycastModify(FVector Direction, FVector Position, float Radius, FBlock Block)
 {
 	Position /= FBlock::Size;
-	// do this better ^?
 
 	FIntVector IntPosition = FIntVector(
 		FMath::FloorToInt(Position.X),

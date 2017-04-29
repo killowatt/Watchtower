@@ -2,7 +2,10 @@
 
 #include "Watchtower.h"
 #include "VoxelPlayerController.h"
+
 #include "WatchtowerGameModeBase.h"
+#include "OnlineTestGameMode.h"
+#include "VoxelGameState.h"
 
 void AVoxelPlayerController::SetupInputComponent()
 {
@@ -47,41 +50,43 @@ void AVoxelPlayerController::MoveRight(float Value)
 		GetPawn()->AddMovementInput(Direction, Value);
 	}
 }
+
 void AVoxelPlayerController::Primary()
 {
-	AWatchtowerGameModeBase* gm = (AWatchtowerGameModeBase*)GetWorld()->GetAuthGameMode();
-	UVoxelMapData* MapData = gm->MapData;
+	ServerTryPlace();
+	//AWatchtowerGameModeBase* gm = (AWatchtowerGameModeBase*)GetWorld()->GetAuthGameMode();
+	//UVoxelMapData* MapData = gm->MapData;
 
-	FVector Direction = PlayerCameraManager->GetCameraRotation().Vector();
-	Direction.Normalize();
+	//FVector Direction = PlayerCameraManager->GetCameraRotation().Vector();
+	//Direction.Normalize();
 
 
-	FBlock x = FBlock();
-	x.Active = false;
+	//FBlock x = FBlock();
+	//x.Active = false;
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue,
-		TEXT("Direction " + Direction.ToString()));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue,
+	//	TEXT("Direction " + Direction.ToString()));
 
-	DrawDebugLine(GetWorld(), PlayerCameraManager->GetCameraLocation(), PlayerCameraManager->GetCameraLocation() + (Direction * 200), FColor::Green, false, 16, 0, 3.0f);
+	//DrawDebugLine(GetWorld(), PlayerCameraManager->GetCameraLocation(), PlayerCameraManager->GetCameraLocation() + (Direction * 200), FColor::Green, false, 16, 0, 3.0f);
 
-	MapData->TryRaycastModify(Direction, PlayerCameraManager->GetCameraLocation(), 8, x);
+	//MapData->TryRaycastModify(Direction, PlayerCameraManager->GetCameraLocation(), 8, x);
 }
 void AVoxelPlayerController::Secondary()
 {
-	AWatchtowerGameModeBase* gm = (AWatchtowerGameModeBase*)GetWorld()->GetAuthGameMode();
-	UVoxelMapData* MapData = gm->MapData;
+	//AWatchtowerGameModeBase* gm = (AWatchtowerGameModeBase*)GetWorld()->GetAuthGameMode();
+	//UVoxelMapData* MapData = gm->MapData;
 
-	FVector Direction = PlayerCameraManager->GetCameraRotation().Vector();
-	Direction.Normalize();
+	//FVector Direction = PlayerCameraManager->GetCameraRotation().Vector();
+	//Direction.Normalize();
 
-	FBlock x = FBlock();
-	x.Active = true;
-	x.Color = FColor(218, 165, 32);
+	//FBlock x = FBlock();
+	//x.Active = true;
+	//x.Color = FColor(218, 165, 32);
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue,
-		TEXT("Direction " + Direction.ToString()));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue,
+	//	TEXT("Direction " + Direction.ToString()));
 
-	MapData->TryRaycastModify(Direction, PlayerCameraManager->GetCameraLocation(), 8, x);
+	//MapData->TryRaycastModify(Direction, PlayerCameraManager->GetCameraLocation(), 8, x);
 }
 void AVoxelPlayerController::OnStartJump()
 {
@@ -93,6 +98,19 @@ void AVoxelPlayerController::OnStopJump()
 	if (GetCharacter())
 		GetCharacter()->bPressedJump = false;
 }
+
+
+void AVoxelPlayerController::ServerTryPlace_Implementation()
+{
+	UE_LOG(Voxel, Warning, TEXT("TryPlace Called _ Server"));
+	AVoxelGameState* gs = (AVoxelGameState*)GetWorld()->GetGameState();
+	gs->MulticastChunkUpdate();
+}
+bool AVoxelPlayerController::ServerTryPlace_Validate()
+{
+	return true;
+}
+
 
 AVoxelPlayerController::AVoxelPlayerController(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
