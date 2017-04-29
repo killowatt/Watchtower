@@ -55,11 +55,14 @@ void AVoxelPlayerController::Primary()
 	FVector Direction = PlayerCameraManager->GetCameraRotation().Vector();
 	Direction.Normalize();
 
+
 	FBlock x = FBlock();
 	x.Active = false;
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue,
-		TEXT("Direction X: " + Direction.ToString()));
+		TEXT("Direction " + Direction.ToString()));
+
+	DrawDebugLine(GetWorld(), PlayerCameraManager->GetCameraLocation(), PlayerCameraManager->GetCameraLocation() + (Direction * 200), FColor::Green, false, 16, 0, 3.0f);
 
 	MapData->TryRaycastModify(Direction, PlayerCameraManager->GetCameraLocation(), 8, x);
 }
@@ -76,7 +79,7 @@ void AVoxelPlayerController::Secondary()
 	x.Color = FColor(218, 165, 32);
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue,
-		TEXT("Direction X: " + Direction.ToString()));
+		TEXT("Direction " + Direction.ToString()));
 
 	MapData->TryRaycastModify(Direction, PlayerCameraManager->GetCameraLocation(), 8, x);
 }

@@ -63,11 +63,8 @@ bool UVoxelMapData::Callback(FIntVector Copy, FIntVector Face, FVector Direction
 }
 void UVoxelMapData::TryRaycastModify(FVector Direction, FVector Position, float Radius, FBlock Block)
 {
-	//
 	Position /= FBlock::Size;
-
-	// do this better ^
-	FIntVector Size = this->Size; // copy for safety
+	// do this better ^?
 
 	FIntVector IntPosition = FIntVector(
 		FMath::FloorToInt(Position.X),
@@ -104,6 +101,8 @@ void UVoxelMapData::TryRaycastModify(FVector Direction, FVector Position, float 
 		if (!(IntPosition.X < 0 || IntPosition.Y < 0 || IntPosition.Z < 0 ||
 			IntPosition.X >= Size.X || IntPosition.Y >= Size.Y || IntPosition.Z >= Size.Z))
 		{
+			DrawDebugLine(GetWorld(), Position, Position + (Direction * 200), FColor::Red, false, 16, 0, 3.0f);
+			DrawDebugPoint(GetWorld(), FVector(IntPosition.X, IntPosition.Y, IntPosition.Z), 5.0f, FColor::Red, false, 16, 0);
 			if (Callback(IntPosition, Face, Direction, Block)) // callback
 				break;
 		}
