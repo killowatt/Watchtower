@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/PlayerController.h"
+#include "VoxelMapData.h"
 #include "VoxelPlayerController.generated.h"
 
 /**
@@ -32,8 +33,8 @@ protected:
 	UFUNCTION()
 	void OnStopJump();
 
-	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerTryPlace();
+	UFUNCTION(Server, reliable, WithValidation)
+	void ServerTryModify(FBlock Block);
 
 public:
 	virtual void SetupInputComponent() override;

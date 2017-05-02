@@ -3,9 +3,9 @@
 #include "Watchtower.h"
 #include "VoxelPlayerController.h"
 
-#include "WatchtowerGameModeBase.h"
 #include "OnlineTestGameMode.h"
 #include "VoxelGameState.h"
+#include "Chunk.h"
 
 void AVoxelPlayerController::SetupInputComponent()
 {
@@ -53,7 +53,12 @@ void AVoxelPlayerController::MoveRight(float Value)
 
 void AVoxelPlayerController::Primary()
 {
-	ServerTryPlace();
+	FBlock Block = FBlock();
+	Block.Color = FColor::Blue;
+	Block.Active = false;
+	ServerTryModify(Block);
+
+	UE_LOG(Voxel, Warning, TEXT("BlockData %s"), (Block.Active ? TEXT("True") : TEXT("False")));
 	//AWatchtowerGameModeBase* gm = (AWatchtowerGameModeBase*)GetWorld()->GetAuthGameMode();
 	//UVoxelMapData* MapData = gm->MapData;
 
@@ -73,6 +78,12 @@ void AVoxelPlayerController::Primary()
 }
 void AVoxelPlayerController::Secondary()
 {
+	FBlock Block = FBlock();
+	Block.Color = FColor::Blue;
+	Block.Active = true;
+	ServerTryModify(Block);
+
+	UE_LOG(Voxel, Warning, TEXT("BlockData %s"), (Block.Active ? TEXT("True") : TEXT("False")));
 	//AWatchtowerGameModeBase* gm = (AWatchtowerGameModeBase*)GetWorld()->GetAuthGameMode();
 	//UVoxelMapData* MapData = gm->MapData;
 
@@ -100,13 +111,21 @@ void AVoxelPlayerController::OnStopJump()
 }
 
 
-void AVoxelPlayerController::ServerTryPlace_Implementation()
+void AVoxelPlayerController::ServerTryModify_Implementation(FBlock Block)
 {
+	// Called on Server wowee
 	UE_LOG(Voxel, Warning, TEXT("TryPlace Called _ Server"));
+	UE_LOG(Voxel, Warning, TEXT("BlockData %s"), (Block.Active ? TEXT("True") : TEXT("False")));
+
+	FVector Direction = PlayerCameraManager->GetCameraRotation().Vector();
+	Direction.Normalize();
+
+	FVector Position = PlayerCameraManager->GetCameraLocation();
+
 	AVoxelGameState* gs = (AVoxelGameState*)GetWorld()->GetGameState();
-	gs->MulticastChunkUpdate();
+	gs->MulticastChunkUpdate(Position, Direction, Block);
 }
-bool AVoxelPlayerController::ServerTryPlace_Validate()
+bool AVoxelPlayerController::ServerTryModify_Validate(FBlock Block)
 {
 	return true;
 }

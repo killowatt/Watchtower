@@ -37,8 +37,21 @@ void AChunk::Tick(float DeltaTime)
 
 	if (PleaseUpdate)
 	{
-		Generate();
-		PleaseUpdate = false;
+		if (GEngine->GetNetMode(GetWorld()) == NM_DedicatedServer)
+		{
+			Generate(); // do simple collision instead of genning a collision from mesh
+			PleaseUpdate = false;
+		}
+		else if (GEngine->GetNetMode(GetWorld()) == NM_Client)
+		{
+			Generate();
+			PleaseUpdate = false;
+		}
+		else
+		{
+			UE_LOG(Voxel, Error, TEXT("Unknown end-user type in chunk update."));
+			PleaseUpdate = false;
+		}
 	}
 }
 

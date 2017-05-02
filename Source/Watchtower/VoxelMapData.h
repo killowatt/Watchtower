@@ -10,7 +10,10 @@ struct FBlock
 {
 	GENERATED_BODY()
 
+	UPROPERTY()
 	bool Active;
+
+	UPROPERTY()
 	FColor Color;
 
 	static const uint32 Size = 100;

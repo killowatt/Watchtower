@@ -294,7 +294,10 @@ void FChunkGenerator::Generate()
 		TArray<struct FRuntimeMeshTangent>& Tangents = MeshData[Index].Tangents;
 
 		//MeshComponent->SetMaterial(Index, Materials[FSetElementId::FromInteger(Index)]);
-		Mesh->CreateMeshSection(0, Vertices, Triangles, Normals, UV0, VertexColors, Tangents, true);
+		if (Vertices.Num() <= 0)
+			continue;
+
+		Mesh->CreateMeshSection(Index, Vertices, Triangles, Normals, UV0, VertexColors, Tangents, true);
 	}
 
 	//Mesh->CreateMeshSection(0, Vertices, Triangles, Normals, TextureCoordinates, Colors, Tangents);
