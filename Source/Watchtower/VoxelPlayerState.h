@@ -8,6 +8,14 @@
 /**
  * 
  */
+UENUM()
+enum class ENetClientState
+{
+	None,
+	ReceivingMap,
+	Connected
+};
+
 UCLASS()
 class WATCHTOWER_API AVoxelPlayerState : public APlayerState
 {
@@ -17,6 +25,10 @@ public:
 	static const int32 MaxHealth = 100;
 
 	int32 Health;
+
+	UPROPERTY()
+	ENetClientState State;
+
 	
 	AVoxelPlayerState(const FObjectInitializer& ObjectInitializer);
 };

@@ -18,10 +18,13 @@ public:
 	UPROPERTY()
 	UVoxelMapData* MapData;
 
+	UPROPERTY()
 	bool bgenned;
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastChunkUpdate(FVector Position, FVector Direction, FBlock bl);
+
+
 
 	AVoxelGameState();
 };

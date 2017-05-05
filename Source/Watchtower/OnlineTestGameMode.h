@@ -18,6 +18,7 @@ class WATCHTOWER_API AOnlineTestGameMode : public AGameModeBase
 
 public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+	virtual void StartPlay() override;
 
 	AOnlineTestGameMode(const FObjectInitializer& ObjectInitializer);
 };

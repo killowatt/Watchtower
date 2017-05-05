@@ -22,6 +22,47 @@ void AOnlineTestGameMode::PostLogin(APlayerController* NewPlayer)
 	//AVoxelPlayer* Player = GetWorld()->SpawnActor<AVoxelPlayer>();
 	//NewPlayer->SetPawn(Player);
 }
+void AOnlineTestGameMode::StartPlay()
+{
+	if (GEngine->GetNetMode(GetWorld()) == NM_DedicatedServer)
+	{
+		AVoxelGameState* gs = (AVoxelGameState*)GetWorld()->GetGameState();
+		if (!gs->bgenned)
+		{
+			gs->MapData = NewObject<UVoxelMapData>();
+			gs->MapData->Load("bin");
+
+			FIntVector MapSize = gs->MapData->GetSize();
+			int32 RemainderX = MapSize.X % 16;
+			int32 RemainderY = MapSize.Y % 16;
+
+			int32 CompleteChunksX = (MapSize.X - RemainderX) / 16;
+			int32 CompleteChunksY = (MapSize.Y - RemainderY) / 16;
+
+			for (int X = 0; X < CompleteChunksX + (RemainderX > 0); X++)
+			{
+				for (int Y = 0; Y < CompleteChunksY + (RemainderY > 0); Y++)
+				{
+					FIntVector ChunkSize(16, 16, 128);
+					if (X > CompleteChunksX)
+						ChunkSize.X = RemainderX;
+					if (Y > CompleteChunksY)
+						ChunkSize.Y = RemainderY;
+
+					AChunk* Chunk = GetWorld()->
+						SpawnActor<AChunk>(FVector(X * 16 * 100, Y * 16 * 100, 0), FRotator::ZeroRotator);
+					Chunk->SetRelativeMapData(gs->MapData, FIntVector(X * 16, Y * 16, 0), ChunkSize);
+					Chunk->Generate();
+
+					gs->MapData->Chunks.Add(Chunk);
+				}
+			}
+
+			gs->bgenned = true;
+			UE_LOG(Voxel, Warning, TEXT("Server successfully loaded chunks."));
+		}
+	}
+}
 
 AOnlineTestGameMode::AOnlineTestGameMode(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

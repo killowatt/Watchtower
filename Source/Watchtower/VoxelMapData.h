@@ -29,6 +29,7 @@ class WATCHTOWER_API UVoxelMapData : public UObject
 
 private:
 	TArray<FBlock> Blocks;
+	bool bLocked;
 
 public:
 	TArray<class AChunk*> Chunks;
@@ -44,10 +45,14 @@ private:
 public:
 	FBlock& GetBlock(int32 X, int32 Y, int32 Z);
 	FBlock& GetBlock(const FIntVector& Coordinates);
+	FBlock& GetBlockByIndex(int32 Index);
 	uint32 GetBlockIndex(int32 X, int32 Y, int32 Z) const;
 
 	FBlock& GetAdjacentBlock(const FIntVector& Coordinates, const FIntVector& Side);
 
+	//
+	const FBlock* GetData() const;
+	//
 	
 	const FIntVector& GetSize() const;
 
@@ -56,6 +61,12 @@ public:
 
 	void Save(const FString& FileName);
 	void Load(const FString& FileName);
+
+	void LoadFromBlocks(const TArray<FBlock>& Blocks, FIntVector Size);
+
+	// Receive Funcs
+	UFUNCTION(Client, Reliable)
+	void BeginSize(FIntVector MSize);
 
 	UVoxelMapData();
 	~UVoxelMapData();

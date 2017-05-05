@@ -25,14 +25,27 @@ FBlock& UVoxelMapData::GetBlock(const FIntVector& Coordinates)
 {
 	return GetBlock(Coordinates.X, Coordinates.Y, Coordinates.Z);
 }
+FBlock& UVoxelMapData::GetBlockByIndex(int32 Index)
+{
+	if (Index <= Blocks.Num())
+		return Blocks[Index];
+
+	check(false);
+	return Blocks[0];
+}
 FORCEINLINE uint32 UVoxelMapData::GetBlockIndex(int32 X, int32 Y, int32 Z) const
 {
 	return X + Y * Size.X + Z * Size.X * Size.Y;
 }
 
-FORCEINLINE const FIntVector& UVoxelMapData::GetSize() const
+const FIntVector& UVoxelMapData::GetSize() const
 {
 	return Size;
+}
+
+const FBlock* UVoxelMapData::GetData() const
+{
+	return Blocks.GetData(); // TODO: offset?
 }
 
 bool UVoxelMapData::Callback(FIntVector Copy, FIntVector Face, FVector Direction, FBlock Block)
@@ -234,8 +247,21 @@ void UVoxelMapData::Load(const FString& FileName)
 	}
 }
 
+void UVoxelMapData::LoadFromBlocks(const TArray<FBlock>& Blocks, FIntVector Size)
+{
+	this->Blocks = Blocks;
+	this->Size = Size;
+}
+
+void UVoxelMapData::BeginSize_Implementation(FIntVector MSize)
+{
+	bLocked = true;
+	Size = MSize;
+}
+
 UVoxelMapData::UVoxelMapData()
 {
+	bLocked = false;
 }
 UVoxelMapData::~UVoxelMapData()
 {
