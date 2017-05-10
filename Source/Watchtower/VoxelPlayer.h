@@ -18,6 +18,23 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
+
+	UFUNCTION()
+		void MoveForward(float Value);
+	UFUNCTION()
+		void MoveRight(float Value);
+
+	UFUNCTION()
+		void Primary();
+	UFUNCTION()
+		void Secondary();
+
+	UFUNCTION()
+		void OnStartJump();
+	UFUNCTION()
+		void OnStopJump();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

@@ -14,6 +14,12 @@ void AOnlineTestGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
+
+
+	//AVoxelPlayerController* Player = (AVoxelPlayerController*)NewPlayer;
+	//Player->ServerBegin();
+
+
 	//ClientSetupChunks();
 
 	//PlayerControllers.Add(NewPlayer);

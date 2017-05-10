@@ -18,20 +18,7 @@ class WATCHTOWER_API AVoxelPlayerController : public APlayerController
 	//bool PressedJump;
 
 protected:
-	UFUNCTION()
-	void MoveForward(float Value);
-	UFUNCTION()
-	void MoveRight(float Value);
 
-	UFUNCTION()
-	void Primary();
-	UFUNCTION()
-	void Secondary();
-
-	UFUNCTION()
-	void OnStartJump();
-	UFUNCTION()
-	void OnStopJump();
 
 	UFUNCTION(Server, reliable, WithValidation)
 	void ServerTryModify(FBlock Block);
@@ -64,7 +51,6 @@ public:
 	void ClientSendChunk(const TArray<uint8>& bytes, int32 inde);
 
 //public:
-	virtual void SetupInputComponent() override;
 
 	AVoxelPlayerController(const FObjectInitializer& ObjectInitializer);
 };
