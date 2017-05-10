@@ -16,8 +16,8 @@ void AOnlineTestGameMode::PostLogin(APlayerController* NewPlayer)
 
 
 
-	//AVoxelPlayerController* Player = (AVoxelPlayerController*)NewPlayer;
-	//Player->ServerBegin();
+	AVoxelPlayerController* Player = (AVoxelPlayerController*)NewPlayer;
+	Player->ServerBegin();
 
 
 	//ClientSetupChunks();
@@ -30,6 +30,8 @@ void AOnlineTestGameMode::PostLogin(APlayerController* NewPlayer)
 }
 void AOnlineTestGameMode::StartPlay()
 {
+	Super::StartPlay();
+
 	if (GEngine->GetNetMode(GetWorld()) == NM_DedicatedServer)
 	{
 		AVoxelGameState* gs = (AVoxelGameState*)GetWorld()->GetGameState();

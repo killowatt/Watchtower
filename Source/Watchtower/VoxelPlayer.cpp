@@ -32,6 +32,8 @@ void AVoxelPlayer::BeginPlay()
 
 void AVoxelPlayer::SetupPlayerInputComponent(UInputComponent* InputComponent)
 {
+	Super::SetupPlayerInputComponent(InputComponent);
+
 	InputComponent->BindAxis("MoveForward", this, &AVoxelPlayer::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &AVoxelPlayer::MoveRight);
 	InputComponent->BindAxis("LookX", this, &AVoxelPlayer::AddControllerYawInput);
@@ -48,7 +50,7 @@ void AVoxelPlayer::MoveForward(float Value)
 	if (Controller && Value != 0.0f)
 	{
 		// find out which way is forward
-		FRotator Rotation = GetControlRotation();
+		FRotator Rotation = Controller->GetControlRotation();
 		// Limit pitch when walking or falling
 		if (GetCharacterMovement()->IsMovingOnGround() || GetCharacterMovement()->IsFalling())
 		{
@@ -67,7 +69,7 @@ void AVoxelPlayer::MoveRight(float Value)
 	if (Controller && Value != 0.0f)
 	{
 		// find out which way is right
-		const FRotator Rotation = GetControlRotation();
+		const FRotator Rotation = Controller->GetControlRotation();
 		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
