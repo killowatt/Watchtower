@@ -24,7 +24,11 @@ class WATCHTOWER_API AVoxelPlayerState : public APlayerState
 public:
 	static const int32 MaxHealth = 100;
 
+	UPROPERTY()
 	int32 Health;
+
+	UFUNCTION()
+	FText GetHealthString();
 
 	UPROPERTY()
 	ENetClientState State;

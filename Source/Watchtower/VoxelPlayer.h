@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/Character.h"
+#include "VoxelPlayerHUD.h"
 #include "VoxelPlayer.generated.h"
 
 UCLASS()
@@ -13,6 +14,11 @@ class WATCHTOWER_API AVoxelPlayer : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AVoxelPlayer();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
+	TSubclassOf<class UUserWidget> wowHUD;
+
+	UVoxelPlayerHUD* PlayerHUD;
 
 protected:
 	// Called when the game starts or when spawned

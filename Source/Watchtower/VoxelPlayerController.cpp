@@ -6,6 +6,12 @@
 #include "OnlineTestGameMode.h"
 #include "VoxelGameState.h"
 #include "Chunk.h"
+#include "Blueprint/UserWidget.h"
+
+void AVoxelPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+}
 
 void AVoxelPlayerController::ServerTryModify_Implementation(FBlock Block)
 {
@@ -28,7 +34,7 @@ bool AVoxelPlayerController::ServerTryModify_Validate(FBlock Block)
 
 void AVoxelPlayerController::ServerBegin_Implementation()
 {
-	if (!serve)
+	if (!serve && GetWorld()->GetNetMode() == NM_DedicatedServer)
 	{
 		TArray<uint8> CompressedData;
 		FArchiveSaveCompressedProxy Compression(servdat, ECompressionFlags::COMPRESS_ZLIB);

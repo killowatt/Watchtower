@@ -4,6 +4,7 @@
 
 #include "GameFramework/PlayerController.h"
 #include "VoxelMapData.h"
+#include "VoxelPlayerHUD.h"
 #include "VoxelPlayerController.generated.h"
 
 /**
@@ -17,8 +18,8 @@ class WATCHTOWER_API AVoxelPlayerController : public APlayerController
 //private:
 	//bool PressedJump;
 
-protected:
-
+public:
+	virtual void BeginPlay() override;
 
 	UFUNCTION(Server, reliable, WithValidation)
 	void ServerTryModify(FBlock Block);

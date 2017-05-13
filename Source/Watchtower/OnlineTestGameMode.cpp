@@ -9,15 +9,18 @@
 #include "VoxelPlayerController.h"
 #include "VoxelPlayerState.h"
 #include "VoxelGameState.h"
+#include "VoxelPlayerHUD.h"
 
 void AOnlineTestGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
 
-
-	AVoxelPlayerController* Player = (AVoxelPlayerController*)NewPlayer;
-	Player->ServerBegin();
+	if (GetWorld()->GetNetMode() == NM_DedicatedServer)
+	{
+		AVoxelPlayerController* Player = (AVoxelPlayerController*)NewPlayer;
+		Player->ServerBegin();
+	}
 
 
 	//ClientSetupChunks();

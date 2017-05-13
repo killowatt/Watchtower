@@ -3,6 +3,11 @@
 #include "Watchtower.h"
 #include "VoxelPlayerState.h"
 
+FText AVoxelPlayerState::GetHealthString()
+{
+	return FText();
+}
+
 AVoxelPlayerState::AVoxelPlayerState(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
 {

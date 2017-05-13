@@ -5,7 +5,6 @@
 
 #include "Chunk.h"
 #include "VoxelMapData.h"
-#include "VoxelPlayer.h"
 #include "VoxelPlayerController.h"
 
 // Sets default values
@@ -28,6 +27,16 @@ void AVoxelPlayer::BeginPlay()
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("VoxelPlayer"));
 
 	}
+
+	if (GetWorld()->GetNetMode() == NM_Client)
+	{
+
+		PlayerHUD = CreateWidget<UVoxelPlayerHUD>(GetWorld(), wowHUD);
+
+		if (PlayerHUD)
+			PlayerHUD->AddToViewport();
+	}
+
 }
 
 void AVoxelPlayer::SetupPlayerInputComponent(UInputComponent* InputComponent)
@@ -81,7 +90,8 @@ void AVoxelPlayer::Primary()
 	FBlock Block = FBlock();
 	Block.Color = FColor::Blue;
 	Block.Active = false;
-	//ServerTryModify(Block);
+	
+	((AVoxelPlayerController*)Controller)->ServerTryModify(Block);
 
 	UE_LOG(Voxel, Warning, TEXT("BlockData %s"), (Block.Active ? TEXT("True") : TEXT("False")));
 	//AWatchtowerGameModeBase* gm = (AWatchtowerGameModeBase*)GetWorld()->GetAuthGameMode();
@@ -106,7 +116,8 @@ void AVoxelPlayer::Secondary()
 	FBlock Block = FBlock();
 	Block.Color = FColor::Blue;
 	Block.Active = true;
-	//ServerTryModify(Block);
+
+	((AVoxelPlayerController*)Controller)->ServerTryModify(Block);
 
 	UE_LOG(Voxel, Warning, TEXT("BlockData %s"), (Block.Active ? TEXT("True") : TEXT("False")));
 	//AWatchtowerGameModeBase* gm = (AWatchtowerGameModeBase*)GetWorld()->GetAuthGameMode();
