@@ -4,6 +4,8 @@
 #include "VoxelPlayerController.h"
 
 #include "OnlineTestGameMode.h"
+#include "VoxelPlayer.h"
+#include "VoxelPlayerState.h"
 #include "VoxelGameState.h"
 #include "Chunk.h"
 #include "Blueprint/UserWidget.h"
@@ -173,6 +175,7 @@ void AVoxelPlayerController::ClientSendChunk_Implementation(const TArray<uint8>&
 		}
 
 		UE_LOG(Voxel, Warning, TEXT("CHUNK ACTORS CREATED"));
+		((AVoxelPlayer*)GetPawn())->PlayerHUD->bShowLoading = false;
 	}
 }
 

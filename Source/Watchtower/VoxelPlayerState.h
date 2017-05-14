@@ -27,9 +27,6 @@ public:
 	UPROPERTY()
 	int32 Health;
 
-	UFUNCTION()
-	FText GetHealthString();
-
 	UPROPERTY()
 	ENetClientState State;
 

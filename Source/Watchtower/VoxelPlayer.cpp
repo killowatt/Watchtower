@@ -34,7 +34,10 @@ void AVoxelPlayer::BeginPlay()
 		PlayerHUD = CreateWidget<UVoxelPlayerHUD>(GetWorld(), wowHUD);
 
 		if (PlayerHUD)
+		{
 			PlayerHUD->AddToViewport();
+			PlayerHUD->SetPlayerReference(this);
+		}
 	}
 
 }
