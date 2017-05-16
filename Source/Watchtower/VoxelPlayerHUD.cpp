@@ -19,7 +19,7 @@ void UVoxelPlayerHUD::NativeTick(const FGeometry& MyGeometry, float DeltaTime)
 			Health = FText::AsNumber(PlayerState->Health);
 	}
 }
-void UVoxelPlayerHUD::SetPlayerReference(const ACharacter* PlayerReference)
+void UVoxelPlayerHUD::SetPlayerReference(const APlayerController* PlayerReference)
 {
 	Player = PlayerReference;
 }
@@ -29,6 +29,6 @@ UVoxelPlayerHUD::UVoxelPlayerHUD(const FObjectInitializer& ObjectInitializer) :
 {
 	bCanEverTick = true;
 
-	bShowLoading = true; // TODO: ty
+	Loading = ESlateVisibility::Visible; // TODO: ty
 }
 

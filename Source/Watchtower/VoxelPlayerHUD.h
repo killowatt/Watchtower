@@ -14,7 +14,7 @@ class WATCHTOWER_API UVoxelPlayerHUD : public UUserWidget
 	GENERATED_BODY()
 
 private:
-	const ACharacter* Player;
+	const APlayerController* Player;
 
 public:
 
@@ -22,11 +22,14 @@ public:
 	FText Health;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bShowLoading;
+	FText CurrentWeapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ESlateVisibility Loading;
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float DeltaTime) override;
 
-	void SetPlayerReference(const ACharacter* PlayerReference);
+	void SetPlayerReference(const APlayerController* PlayerReference);
 
 	UVoxelPlayerHUD(const FObjectInitializer& ObjectInitializer);
 };

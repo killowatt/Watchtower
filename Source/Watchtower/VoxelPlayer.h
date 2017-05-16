@@ -15,10 +15,8 @@ public:
 	// Sets default values for this character's properties
 	AVoxelPlayer();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
-	TSubclassOf<class UUserWidget> wowHUD;
 
-	UVoxelPlayerHUD* PlayerHUD;
+	bool weaponEnabled;
 
 protected:
 	// Called when the game starts or when spawned
@@ -40,6 +38,11 @@ protected:
 		void OnStartJump();
 	UFUNCTION()
 		void OnStopJump();
+
+	UFUNCTION()
+		void PrimaryWeapon();
+	UFUNCTION()
+		void SecondaryWeapon();
 
 public:	
 	// Called every frame

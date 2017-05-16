@@ -71,8 +71,6 @@ AChunk::AChunk()
 		RuntimeMesh->SetMaterial(0, (UMaterial*)Material.Object);
 	}
 
-
-
 	PleaseUpdate = false;
 }
 
@@ -80,6 +78,9 @@ AChunk::AChunk()
 void AChunk::BeginPlay()
 {
 	Super::BeginPlay();
+
+	RuntimeMesh->SetCollisionResponseToChannel(COLLISION_VOXELPLAYER, ECR_Block);
+	//RuntimeMesh->SetCollisionResponseToChannel(COLLISION_VOXEL, ECR_Block);
 }
 void AChunk::OnConstruction(const FTransform& Transform)
 {

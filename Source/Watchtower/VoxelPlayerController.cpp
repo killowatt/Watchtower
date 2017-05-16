@@ -13,6 +13,23 @@
 void AVoxelPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (GetWorld()->GetNetMode() == NM_Client || GetWorld()->GetNetMode() == NM_ListenServer)
+	{
+		FStringClassReference MyWidgetClassRef(TEXT("/Game/HUD.HUD_C"));
+		if (UClass* MyWidgetClass = MyWidgetClassRef.TryLoadClass<UVoxelPlayerHUD>())
+		{
+			PlayerHUD = CreateWidget<UVoxelPlayerHUD>(GetWorld(), MyWidgetClass);
+		}
+
+		if (PlayerHUD)
+		{
+			PlayerHUD->AddToViewport();
+			PlayerHUD->SetPlayerReference(this);
+
+			PlayerHUD->CurrentWeapon = FText::FromString("Block");
+		}
+	}
 }
 
 void AVoxelPlayerController::ServerTryModify_Implementation(FBlock Block)
@@ -30,6 +47,73 @@ void AVoxelPlayerController::ServerTryModify_Implementation(FBlock Block)
 	gs->MulticastChunkUpdate(Position, Direction, Block);
 }
 bool AVoxelPlayerController::ServerTryModify_Validate(FBlock Block)
+{
+	return true;
+}
+
+void AVoxelPlayerController::ServerShoot_Implementation()
+{
+	FHitResult hitResult(ForceInit);
+
+	FVector Position = PlayerCameraManager->GetCameraLocation();
+
+	FVector Direction = PlayerCameraManager->GetCameraRotation().Vector();
+	Direction.Normalize();
+
+
+
+	FCollisionQueryParams TraceParams(true);
+
+	TraceParams.bTraceComplex = true;
+	//TraceParams.bTraceAsyncScene = true;
+	TraceParams.bReturnPhysicalMaterial = false;
+
+	if (GetPawn())
+	{
+		TraceParams.AddIgnoredActor(GetPawn());
+	}
+	else
+	{
+		return; // if pawn is null :s
+	}
+
+	bool hitt = false;
+
+	hitt = GetWorld()->LineTraceSingleByChannel(
+		hitResult,
+		Position,
+		Position + (Direction * 50000),
+		COLLISION_VOXELPLAYER,
+		TraceParams);
+
+	if (hitt && hitResult.GetActor())
+	{
+
+		UE_LOG(Voxel, Warning, TEXT("HIT OBJECT TYPE %s"), *hitResult.GetActor()->GetName());
+
+		if (hitResult.GetActor()->IsA(AChunk::StaticClass()))
+		{
+			UE_LOG(Voxel, Warning, TEXT("Is Chunk"));
+
+			return;
+		}
+		else if (hitResult.GetActor()->IsA(AVoxelPlayer::StaticClass()))
+		{
+			UE_LOG(Voxel, Warning, TEXT("Is Player"));
+			
+			AVoxelPlayer* vx = (AVoxelPlayer*)hitResult.GetActor();
+			AVoxelPlayerState* vy = (AVoxelPlayerState*)vx->PlayerState;
+
+			vy->Health -= 25;
+			UE_LOG(Voxel, Warning, TEXT("Player took 25 damage"));
+
+			return;
+		}
+		
+	}
+
+}
+bool AVoxelPlayerController::ServerShoot_Validate()
 {
 	return true;
 }
@@ -175,7 +259,7 @@ void AVoxelPlayerController::ClientSendChunk_Implementation(const TArray<uint8>&
 		}
 
 		UE_LOG(Voxel, Warning, TEXT("CHUNK ACTORS CREATED"));
-		((AVoxelPlayer*)GetPawn())->PlayerHUD->bShowLoading = false;
+		PlayerHUD->Loading = ESlateVisibility::Hidden;
 	}
 }
 
@@ -183,4 +267,5 @@ AVoxelPlayerController::AVoxelPlayerController(const FObjectInitializer& ObjectI
 	Super(ObjectInitializer)
 {
 	bReplicates = true;
+
 }

@@ -24,6 +24,16 @@ public:
 	UFUNCTION(Server, reliable, WithValidation)
 	void ServerTryModify(FBlock Block);
 
+	UFUNCTION(Server, reliable, WithValidation)
+	void ServerShoot();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
+	TSubclassOf<class UUserWidget> wowHUD;
+
+	UUserWidget* balls;
+
+	UVoxelPlayerHUD* PlayerHUD;
+
 public:
 	// chunk retrieval code wow!
 	UPROPERTY()

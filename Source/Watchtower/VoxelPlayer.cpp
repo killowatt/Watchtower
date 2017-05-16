@@ -15,6 +15,11 @@ AVoxelPlayer::AVoxelPlayer()
 
 	bReplicates = true;
 	bReplicateMovement = true;
+
+	weaponEnabled = false;
+
+	NetUpdateFrequency = 16;
+	MinNetUpdateFrequency = 4;
 }
 
 // Called when the game starts or when spawned
@@ -28,18 +33,8 @@ void AVoxelPlayer::BeginPlay()
 
 	}
 
-	if (GetWorld()->GetNetMode() == NM_Client)
-	{
-
-		PlayerHUD = CreateWidget<UVoxelPlayerHUD>(GetWorld(), wowHUD);
-
-		if (PlayerHUD)
-		{
-			PlayerHUD->AddToViewport();
-			PlayerHUD->SetPlayerReference(this);
-		}
-	}
-
+	GetCapsuleComponent()->SetCollisionResponseToChannel(COLLISION_VOXELPLAYER, ECR_Block);
+	//GetCapsuleComponent()->SetCollisionResponseToChannel(COLLISION_PLAYER, ECR_Block);
 }
 
 void AVoxelPlayer::SetupPlayerInputComponent(UInputComponent* InputComponent)
@@ -51,10 +46,14 @@ void AVoxelPlayer::SetupPlayerInputComponent(UInputComponent* InputComponent)
 	InputComponent->BindAxis("LookX", this, &AVoxelPlayer::AddControllerYawInput);
 	InputComponent->BindAxis("LookY", this, &AVoxelPlayer::AddControllerPitchInput);
 
-	InputComponent->BindAction("Primary", IE_Pressed, this, &AVoxelPlayer::Primary);
-	InputComponent->BindAction("Secondary", IE_Pressed, this, &AVoxelPlayer::Secondary);
+	InputComponent->BindAction("PrimaryFire", IE_Pressed, this, &AVoxelPlayer::Primary);
+	InputComponent->BindAction("SecondaryFire", IE_Pressed, this, &AVoxelPlayer::Secondary);
 	InputComponent->BindAction("Jump", IE_Pressed, this, &AVoxelPlayer::OnStartJump);
 	InputComponent->BindAction("Jump", IE_Released, this, &AVoxelPlayer::OnStopJump);
+
+	// Weapons
+	InputComponent->BindAction("PrimaryWeapon", IE_Pressed, this, &AVoxelPlayer::PrimaryWeapon);
+	InputComponent->BindAction("SecondaryWeapon", IE_Pressed, this, &AVoxelPlayer::SecondaryWeapon);
 }
 
 void AVoxelPlayer::MoveForward(float Value)
@@ -90,6 +89,13 @@ void AVoxelPlayer::MoveRight(float Value)
 
 void AVoxelPlayer::Primary()
 {
+	if (weaponEnabled)
+	{
+		((AVoxelPlayerController*)Controller)->ServerShoot();
+		return;
+	}
+
+	// ONLY IF NONWEAP
 	FBlock Block = FBlock();
 	Block.Color = FColor::Blue;
 	Block.Active = false;
@@ -145,6 +151,19 @@ void AVoxelPlayer::OnStartJump()
 void AVoxelPlayer::OnStopJump()
 {
 	bPressedJump = false;
+}
+
+void AVoxelPlayer::PrimaryWeapon()
+{
+	weaponEnabled = true;
+	((AVoxelPlayerController*)Controller)->
+		PlayerHUD->CurrentWeapon = FText::FromString(TEXT("Rifle"));
+}
+void AVoxelPlayer::SecondaryWeapon()
+{
+	weaponEnabled = false;
+	((AVoxelPlayerController*)Controller)->
+		PlayerHUD->CurrentWeapon = FText::FromString(TEXT("Block"));
 }
 
 // Called every frame
