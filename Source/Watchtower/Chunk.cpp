@@ -49,7 +49,7 @@ void AChunk::Tick(float DeltaTime)
 		}
 		else
 		{
-			UE_LOG(Voxel, Error, TEXT("Unknown end-user type in chunk update."));
+			UE_LOG(WTVoxel, Error, TEXT("Unknown end-user type in chunk update."));
 			PleaseUpdate = false;
 		}
 	}

@@ -18,8 +18,8 @@ AVoxelPlayer::AVoxelPlayer()
 
 	weaponEnabled = false;
 
-	NetUpdateFrequency = 16;
-	MinNetUpdateFrequency = 4;
+	NetUpdateFrequency = 100;
+	//MinNetUpdateFrequency = ;
 }
 
 // Called when the game starts or when spawned
@@ -69,7 +69,7 @@ void AVoxelPlayer::MoveForward(float Value)
 		}
 		// add movement in that direction
 
-		UE_LOG(Voxel, Warning, TEXT("Movement is %f"), Value);
+		UE_LOG(WTVoxel, Warning, TEXT("Movement is %f"), Value);
 
 		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::X);
 		AddMovementInput(Direction, Value);
@@ -102,7 +102,7 @@ void AVoxelPlayer::Primary()
 	
 	((AVoxelPlayerController*)Controller)->ServerTryModify(Block);
 
-	UE_LOG(Voxel, Warning, TEXT("BlockData %s"), (Block.Active ? TEXT("True") : TEXT("False")));
+	UE_LOG(WTVoxel, Warning, TEXT("BlockData %s"), (Block.Active ? TEXT("True") : TEXT("False")));
 	//AWatchtowerGameModeBase* gm = (AWatchtowerGameModeBase*)GetWorld()->GetAuthGameMode();
 	//UVoxelMapData* MapData = gm->MapData;
 
@@ -128,7 +128,7 @@ void AVoxelPlayer::Secondary()
 
 	((AVoxelPlayerController*)Controller)->ServerTryModify(Block);
 
-	UE_LOG(Voxel, Warning, TEXT("BlockData %s"), (Block.Active ? TEXT("True") : TEXT("False")));
+	UE_LOG(WTVoxel, Warning, TEXT("BlockData %s"), (Block.Active ? TEXT("True") : TEXT("False")));
 	//AWatchtowerGameModeBase* gm = (AWatchtowerGameModeBase*)GetWorld()->GetAuthGameMode();
 	//UVoxelMapData* MapData = gm->MapData;
 

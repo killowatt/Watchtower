@@ -34,6 +34,8 @@ public:
 
 	UVoxelPlayerHUD* PlayerHUD;
 
+	bool FINALLYFINISHED;
+
 public:
 	// chunk retrieval code wow!
 	UPROPERTY()

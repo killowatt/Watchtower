@@ -11,17 +11,31 @@
 #include "VoxelGameState.h"
 #include "VoxelPlayerHUD.h"
 
+//APlayerController* AOnlineTestGameMode::Login(UPlayer* NewPlayer, ENetRole InRemoteRole,
+//	const FString& Portal, const FString& Options, const FUniqueNetIdRepl& UniqueId,
+//	FString& ErrorMessage)
+//{
+//	Super::Login(NewPlayer, InRemoteRole, Portal, Options, UniqueId, ErrorMessage);
+//}
 void AOnlineTestGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-
+	AVoxelPlayerController* Player = (AVoxelPlayerController*)NewPlayer;
 	if (GetWorld()->GetNetMode() == NM_DedicatedServer)
 	{
-		AVoxelPlayerController* Player = (AVoxelPlayerController*)NewPlayer;
 		Player->ServerBegin();
 	}
 
+	//if (GetWorld()->GetNetMode() == NM_Client)
+	//{
+	//	//while (!Player->FINALLYFINISHED)
+	//	//{
+	//	//}
+	//}
+
+	//Player->ForceNetUpdate();
+	//Player->GetPawn()->ForceNetUpdate();
 
 	//ClientSetupChunks();
 
@@ -70,7 +84,7 @@ void AOnlineTestGameMode::StartPlay()
 			}
 
 			gs->bgenned = true;
-			UE_LOG(Voxel, Warning, TEXT("Server successfully loaded chunks."));
+			UE_LOG(WTVoxel, Warning, TEXT("Server successfully loaded chunks."));
 		}
 	}
 }

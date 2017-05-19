@@ -16,6 +16,13 @@ enum class ENetClientState
 	Connected
 };
 
+UENUM()
+enum EVoxelPlayerTeam
+{
+	Green = 0,
+	Blue = 1
+};
+
 UCLASS()
 class WATCHTOWER_API AVoxelPlayerState : public APlayerState
 {
@@ -29,7 +36,6 @@ public:
 
 	UPROPERTY()
 	ENetClientState State;
-
 	
 	AVoxelPlayerState(const FObjectInitializer& ObjectInitializer);
 };

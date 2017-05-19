@@ -35,8 +35,8 @@ void AVoxelPlayerController::BeginPlay()
 void AVoxelPlayerController::ServerTryModify_Implementation(FBlock Block)
 {
 	// Called on Server wowee
-	UE_LOG(Voxel, Warning, TEXT("TryPlace Called _ Server"));
-	UE_LOG(Voxel, Warning, TEXT("BlockData %s"), (Block.Active ? TEXT("True") : TEXT("False")));
+	UE_LOG(WTVoxel, Warning, TEXT("TryPlace Called _ Server"));
+	UE_LOG(WTVoxel, Warning, TEXT("BlockData %s"), (Block.Active ? TEXT("True") : TEXT("False")));
 
 	FVector Direction = PlayerCameraManager->GetCameraRotation().Vector();
 	Direction.Normalize();
@@ -89,23 +89,23 @@ void AVoxelPlayerController::ServerShoot_Implementation()
 	if (hitt && hitResult.GetActor())
 	{
 
-		UE_LOG(Voxel, Warning, TEXT("HIT OBJECT TYPE %s"), *hitResult.GetActor()->GetName());
+		UE_LOG(WTVoxel, Warning, TEXT("HIT OBJECT TYPE %s"), *hitResult.GetActor()->GetName());
 
 		if (hitResult.GetActor()->IsA(AChunk::StaticClass()))
 		{
-			UE_LOG(Voxel, Warning, TEXT("Is Chunk"));
+			UE_LOG(WTVoxel, Warning, TEXT("Is Chunk"));
 
 			return;
 		}
 		else if (hitResult.GetActor()->IsA(AVoxelPlayer::StaticClass()))
 		{
-			UE_LOG(Voxel, Warning, TEXT("Is Player"));
+			UE_LOG(WTVoxel, Warning, TEXT("Is Player"));
 			
 			AVoxelPlayer* vx = (AVoxelPlayer*)hitResult.GetActor();
 			AVoxelPlayerState* vy = (AVoxelPlayerState*)vx->PlayerState;
 
 			vy->Health -= 25;
-			UE_LOG(Voxel, Warning, TEXT("Player took 25 damage"));
+			UE_LOG(WTVoxel, Warning, TEXT("Player took 25 damage"));
 
 			return;
 		}
@@ -138,7 +138,7 @@ void AVoxelPlayerController::ServerBegin_Implementation()
 
 		if (Compression.GetError())
 		{
-			UE_LOG(Voxel, Error, TEXT("Compression error"));
+			UE_LOG(WTVoxel, Error, TEXT("Compression error"));
 		}
 
 		finalChunkSize = servdat.Num() % 2048;
@@ -146,6 +146,7 @@ void AVoxelPlayerController::ServerBegin_Implementation()
 
 		serve = true;
 	}
+
 	ClientBegin(TOTALCHUNKSz, finalChunkSize, FIntVector(16, 32, 0));
 }
 bool AVoxelPlayerController::ServerBegin_Validate()
@@ -163,7 +164,7 @@ void AVoxelPlayerController::ClientBegin_Implementation(int32 TotalChunks, int32
 }
 void AVoxelPlayerController::ServerAskChunk_Implementation(int32 Index)
 {
-	UE_LOG(Voxel, Warning, TEXT("Received AskChunk Index %d"), Index);
+	UE_LOG(WTVoxel, Warning, TEXT("Received AskChunk Index %d"), Index);
 
 	AVoxelGameState* gs = (AVoxelGameState*)GetWorld()->GetGameState();
 
@@ -179,7 +180,7 @@ void AVoxelPlayerController::ServerAskChunk_Implementation(int32 Index)
 	send.Append(servdat.GetData() + (2048 * Index), apndSize);
 	//
 
-	UE_LOG(Voxel, Warning, TEXT("Sent compressed packet of size %d"), send.Num());
+	UE_LOG(WTVoxel, Warning, TEXT("Sent compressed packet of size %d"), send.Num());
 
 	ClientSendChunk(send, Index);
 }
@@ -189,7 +190,8 @@ bool AVoxelPlayerController::ServerAskChunk_Validate(int32 Index)
 }
 void AVoxelPlayerController::ClientSendChunk_Implementation(const TArray<uint8>& bytes, int32 inde)
 {
-	UE_LOG(Voxel, Warning, TEXT("Recv compressed packet of size %d"), recvDat.Num());
+	UE_LOG(WTVoxel, Warning, TEXT("Recv compressed packet of size %d"), recvDat.Num());
+
 
 	int32 appndSize = 0;
 	if (receivedChunks >= TOTALCHUNKSz && finalChunkSize > 0)
@@ -199,7 +201,7 @@ void AVoxelPlayerController::ClientSendChunk_Implementation(const TArray<uint8>&
 
 	recvDat.Append(bytes.GetData(), appndSize);
 
-	UE_LOG(Voxel, Warning, TEXT("Chunk %d / %d"), receivedChunks, TOTALCHUNKSz);
+	UE_LOG(WTVoxel, Warning, TEXT("Chunk %d / %d"), receivedChunks, TOTALCHUNKSz);
 
 	receivedChunks++;
 
@@ -209,7 +211,7 @@ void AVoxelPlayerController::ClientSendChunk_Implementation(const TArray<uint8>&
 	}
 	else
 	{
-		UE_LOG(Voxel, Warning, TEXT("Supposedely got all the blocks lad"));
+		UE_LOG(WTVoxel, Warning, TEXT("Supposedely got all the blocks lad"));
 		AVoxelGameState* gs = (AVoxelGameState*)GetWorld()->GetGameState();
 
 		TArray<uint8> decompressed;
@@ -217,7 +219,7 @@ void AVoxelPlayerController::ClientSendChunk_Implementation(const TArray<uint8>&
 
 		if (Decompression.GetError())
 		{
-			UE_LOG(Voxel, Error, TEXT("Decompression error"));
+			UE_LOG(WTVoxel, Error, TEXT("Decompression error"));
 		}
 
 		Decompression << decompressed;
@@ -227,7 +229,7 @@ void AVoxelPlayerController::ClientSendChunk_Implementation(const TArray<uint8>&
 		int32 TOTALSIZEWOW = (16 * 16 * 128) * 512;
 		itsTheBlockZone.Append((FBlock*)decompressed.GetData(), TOTALSIZEWOW);
 
-		UE_LOG(Voxel, Warning, TEXT("BLOCKS APPENDED"));
+		UE_LOG(WTVoxel, Warning, TEXT("BLOCKS APPENDED"));
 
 		gs->MapData = NewObject<UVoxelMapData>();
 		gs->MapData->LoadFromBlocks(itsTheBlockZone, FIntVector(16 * 16, 16 * 32, 128));
@@ -258,8 +260,10 @@ void AVoxelPlayerController::ClientSendChunk_Implementation(const TArray<uint8>&
 			}
 		}
 
-		UE_LOG(Voxel, Warning, TEXT("CHUNK ACTORS CREATED"));
+		UE_LOG(WTVoxel, Warning, TEXT("CHUNK ACTORS CREATED"));
 		PlayerHUD->Loading = ESlateVisibility::Hidden;
+
+		FINALLYFINISHED = true;
 	}
 }
 
